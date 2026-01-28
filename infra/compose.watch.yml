@@ -1,0 +1,12 @@
+# Docker Compose Watch configuration for live-reload
+# See: https://docs.docker.com/compose/watch/
+
+watch:
+  backend:
+    - path: ../backend
+      target: /app
+      action: sync
+  frontend:
+    - path: ../frontend
+      target: /app
+      action: sync
