@@ -1,11 +1,54 @@
 # Home Interior Design Collaboration App: Requirements & Architecture
-
 ## Integration & Embedding Guidelines
-
 To ensure this application can be easily integrated into existing or future systems (e.g., as a Dashboard card or micro-frontend), follow these principles:
 
+
+---
+
+## 2a. Common, Reusable APIs & Features
+
+The following APIs and features are recommended for any modern application, regardless of domain. They provide a robust foundation and can be reused across projects:
+
+### 1. User Authentication & Authorization
+  - Sign up, login, logout
+  - Password reset/change
+  - JWT or OAuth2 token management
+  - User roles/permissions
+
+### 2. User Profile Management
+  - Get/update user profile
+  - Avatar upload
+
+### 3. Health Check & Status
+  - `/health` or `/status` endpoint for monitoring
+
+### 4. Audit Logging & Activity Tracking
+  - Log user actions (optional, but valuable for security/compliance)
+
+### 5. Error Handling & Standardized Responses
+  - Consistent error format (e.g., error codes, messages)
+
+### 6. Pagination, Filtering, and Sorting
+  - For all list endpoints
+
+### 7. File Upload/Download
+  - Generic endpoints for handling files (images, docs, etc.)
+
+### 8. API Documentation
+  - OpenAPI/Swagger auto-generated docs
+
+### 9. Admin/Management Endpoints
+  - User management, system settings (for admin users)
+
+### 10. Notifications (optional)
+  - Email or in-app notifications
+
+Including these in your base infrastructure will make future projects faster and more robust.
+
+---
+
+```
 - **Modular Frontend**: Build the UI as a self-contained React (or web component) module that can be embedded as a card or widget in other dashboards.
-- **API-First Backend**: Expose all features via RESTful (or GraphQL) APIs, so any external dashboard can interact with the app’s data and logic.
 - **Authentication**: Use token-based authentication (JWT/OAuth) to allow secure cross-app integration.
 - **Decoupled Design**: Avoid hard dependencies on specific frontend or backend frameworks; keep interfaces clean and well-documented.
 - **Microservice-Ready**: Structure backend so it can run as a standalone service or be called from other services.
