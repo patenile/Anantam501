@@ -1,0 +1,13 @@
+{
+  "name": "anantam-e2e",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "@playwright/test": "^1.42.0"
+  },
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "codegen": "npx playwright codegen http://localhost:3000"
+  }
+}
