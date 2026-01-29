@@ -178,6 +178,7 @@ def setup_python_venv():
 def main():
     parser = argparse.ArgumentParser(description="Anantam Master Control Script")
     parser.add_argument('--live', action='store_true', help='Bring up the application stack and keep it running (docker compose up)')
+    parser.add_argument('--tests', action='store_true', help='Run all backend test suites with stack up, then stop stack')
     parser.add_argument('--build', action='store_true', help='Rebuild all Docker images with no cache')
     parser.add_argument('--cleanup', action='store_true', help='Remove all containers, volumes, and orphans')
     args = parser.parse_args()
@@ -202,12 +203,186 @@ def main():
         bring_app_live()
         return
 
-    # Default: full validation and stack test
+
+    if args.tests:
+        # Start stack (detached)
+        print("[STEP] Starting Docker Compose stack for test suites ...")
+        infra_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'infra'))
+        env_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
+        env_dst = os.path.join(infra_dir, '.env')
+        if not os.path.exists(env_dst):
+            import shutil
+            shutil.copy(env_src, env_dst)
+            print(f"[INFO] Copied .env to {env_dst} for Docker Compose.")
+        result = subprocess.run(['docker', 'compose', 'up', '-d'], cwd=infra_dir)
+        if result.returncode != 0:
+            print("[FATAL] Failed to start Docker Compose stack. Check docker-compose.yml and .env.")
+            sys.exit(1)
+        import time
+        import urllib.request
+        # Wait for backend to be healthy by curling the endpoint
+        print("[STEP] Waiting for backend service to be healthy (curl check) ...")
+        healthy = False
+        for _ in range(30):
+            try:
+                with urllib.request.urlopen("http://localhost:8000/", timeout=2) as resp:
+                    if resp.status == 200:
+                        healthy = True
+                        print("[OK] Backend is healthy.")
+                        break
+            except Exception:
+                pass
+            time.sleep(2)
+        if not healthy:
+            print("[FATAL] Backend did not become healthy in time.")
+            subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+            sys.exit(1)
+
+        # Run Alembic migrations inside backend container
+        print("[STEP] Running Alembic migrations in backend container ...")
+        print(f"[DEBUG] Using backend container ID: {backend_container_id}")
+        print(f"[DEBUG] infra_dir: {infra_dir}")
+        print(f"[DEBUG] Current working directory: {os.getcwd()}")
+        print(f"[DEBUG] Environment: {os.environ}")
+        # Use 'docker compose ps -q backend' to get the backend container ID
+        try:
+            ps = subprocess.run(['docker', 'compose', 'ps', '-q', 'backend'], cwd=infra_dir, capture_output=True, text=True)
+            backend_container_id = ps.stdout.strip()
+        except Exception as e:
+            print(f"[WARN] Could not determine backend container ID: {e}")
+            backend_container_id = None
+        if backend_container_id:
+            # Debug: List /app and show alembic.ini contents before running Alembic
+            print("[DEBUG] Listing /app directory in backend container:")
+            subprocess.run([
+                'docker', 'compose', 'exec', '-T', 'backend',
+                'sh', '-c', 'ls -l /app'
+            ])
+            print("[DEBUG] Showing contents of /app/alembic.ini in backend container:")
+            subprocess.run([
+                'docker', 'compose', 'exec', '-T', 'backend',
+                'sh', '-c', 'cat /app/alembic.ini'
+            ])
+            print("[DEBUG] Checking Alembic availability in backend container:")
+            subprocess.run([
+                'docker', 'compose', 'exec', '-T', 'backend',
+                'sh', '-c', 'alembic --help'
+            ])
+            # Check if /app/alembic.ini exists in the backend container
+            check_ini_cmd = [
+                'docker', 'compose', 'exec', '-T', 'backend',
+                'sh', '-c', 'ls /app/alembic.ini'
+            ]
+            ini_result = subprocess.run(check_ini_cmd, capture_output=True, text=True)
+            if ini_result.returncode != 0:
+                print("[FATAL] /app/alembic.ini not found in backend container. Alembic migration cannot proceed.")
+                print(ini_result.stdout)
+                print(ini_result.stderr)
+                subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+                sys.exit(1)
+            alembic_cmd = [
+                'docker', 'compose', 'exec', '-T', 'backend',
+                'sh', '-c', 'cd /app && alembic -c /app/alembic.ini upgrade head'
+            ]
+            result = subprocess.run(alembic_cmd)
+            if result.returncode == 0:
+                print("[OK] Alembic migrations applied.")
+            else:
+                print("[FATAL] Alembic migrations failed. See output above.")
+                subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+                sys.exit(1)
+        else:
+            print("[FATAL] Could not find backend container to run Alembic migrations.")
+            subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+            sys.exit(1)
+
+        # Run all test scripts in tests/
+        print("[STEP] Running all backend test suites ...")
+        backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+        venv_python = os.path.join(backend_dir, '.venv', 'bin', 'python')
+        tests_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tests'))
+        import glob
+        test_files = sorted(glob.glob(os.path.join(tests_dir, 'test_*.py')))
+        all_passed = True
+        for test_script in test_files:
+            print(f"[TEST] Running {os.path.basename(test_script)} ...")
+            result = subprocess.run([venv_python, test_script])
+            if result.returncode == 0:
+                print(f"[OK] {os.path.basename(test_script)} passed.")
+            else:
+                print(f"[FAIL] {os.path.basename(test_script)} failed. See output above.")
+                all_passed = False
+        # Stop stack after tests
+        print("[STEP] Stopping Docker Compose stack after tests ...")
+        subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+        if all_passed:
+            print("[OK] All backend test suites passed.")
+        else:
+            print("[FAIL] Some backend test suites failed.")
+        return
+
+    # Default: full validation, stack up, test, stack down
     run_env_validation()
     setup_python_venv()
     check_env_file_and_vars()
-    test_docker_compose_stack()
-    print("[INFO] All initial checks and stack test complete. Use --live to keep the app running.")
+
+    # Start stack (in detached mode)
+    print("[STEP 4] Starting Docker Compose stack for testing ...")
+    infra_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'infra'))
+    env_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
+    env_dst = os.path.join(infra_dir, '.env')
+    if not os.path.exists(env_dst):
+        import shutil
+        shutil.copy(env_src, env_dst)
+        print(f"[INFO] Copied .env to {env_dst} for Docker Compose.")
+    result = subprocess.run(['docker', 'compose', 'up', '-d'], cwd=infra_dir)
+    if result.returncode != 0:
+        print("[FATAL] Failed to start Docker Compose stack. Check docker-compose.yml and .env.")
+        sys.exit(1)
+    import time
+    # Wait for backend to be healthy
+    print("[STEP 4.1] Waiting for backend service to be healthy ...")
+    healthy = False
+    for _ in range(30):
+        ps = subprocess.run(['docker', 'compose', 'ps', '--format', 'json'], cwd=infra_dir, capture_output=True, text=True)
+        import json
+        try:
+            services = json.loads(ps.stdout)
+            for svc in services:
+                if svc.get('Service') == 'backend' and 'healthy' in svc.get('Status', ''):
+                    healthy = True
+                    break
+        except Exception:
+            pass
+        if healthy:
+            print("[OK] Backend is healthy.")
+            break
+        time.sleep(2)
+    if not healthy:
+        print("[FATAL] Backend did not become healthy in time.")
+        subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+        sys.exit(1)
+
+    # Run automated tests
+    print("[STEP 5] Running automated backend tests ...")
+    backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+    venv_python = os.path.join(backend_dir, '.venv', 'bin', 'python')
+    tests_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'tests'))
+    test_script = os.path.join(tests_dir, 'test_auth.py')
+    if os.path.exists(test_script):
+        result = subprocess.run([venv_python, test_script])
+        if result.returncode == 0:
+            print("[OK] Authentication endpoints passed automated tests.")
+        else:
+            print("[FAIL] Authentication endpoints failed automated tests. See output above.")
+    else:
+        print(f"[WARN] Test script not found: {test_script}")
+
+    # Stop stack after tests
+    print("[STEP 6] Stopping Docker Compose stack after tests ...")
+    subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+
+    print("[INFO] All initial checks, stack test, and automated tests complete. Use --live to keep the app running.")
 
 if __name__ == "__main__":
     main()

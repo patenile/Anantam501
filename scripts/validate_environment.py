@@ -81,10 +81,32 @@ def main():
         if ok and tool in MIN_VERSIONS:
             ok = check_version(tool, MIN_VERSIONS[tool])
         all_ok = all_ok and ok
-    if all_ok:
-        print("\n[ALL OK] All required tools are installed and meet minimum version requirements.")
+
+    # Python package checks (backend/.venv)
+    print("\n[STEP] Checking required Python packages in backend/.venv ...")
+    import os
+    backend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+    venv_python = os.path.join(backend_dir, '.venv', 'bin', 'python')
+    required_pkgs = [
+        'fastapi', 'uvicorn', 'psycopg2-binary', 'sqlalchemy', 'python-dotenv',
+        'passlib', 'python-jose', 'python-multipart', 'fastapi-pagination',
+        'aiofiles', 'aiosmtplib', 'alembic', 'loguru'
+    ]
+    missing_pkgs = []
+    for pkg in required_pkgs:
+        result = subprocess.run([venv_python, '-c', f'import {pkg.replace("-", "_")}',], capture_output=True)
+        if result.returncode != 0:
+            missing_pkgs.append(pkg)
+    if not missing_pkgs:
+        print("[OK] All required Python packages are installed in backend/.venv.")
     else:
-        print("\n[FAIL] Some required tools are missing or do not meet version requirements. Please install or upgrade them before proceeding.")
+        print(f"[ERROR] Missing Python packages in backend/.venv: {', '.join(missing_pkgs)}")
+        all_ok = False
+
+    if all_ok:
+        print("\n[ALL OK] All required tools and Python packages are installed and meet minimum version requirements.")
+    else:
+        print("\n[FAIL] Some required tools or Python packages are missing or do not meet version requirements. Please install or upgrade them before proceeding.")
     print("\nValidation complete.\n")
 
 if __name__ == "__main__":
