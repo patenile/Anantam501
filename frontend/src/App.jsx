@@ -1,8 +1,6 @@
+import React, { useState, useEffect } from 'react';
+
 console.log('[React App] App.jsx mounted');
-
-
-
-import React, { useState } from 'react';
 
 function App() {
   const [view, setView] = useState('home');
@@ -15,22 +13,35 @@ function App() {
   const [loginMsg, setLoginMsg] = useState('');
   const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    console.log('regMsg changed:', regMsg);
+  }, [regMsg]);
+
+  useEffect(() => {
+    console.log('view changed:', view);
+  }, [view]);
+
   function validateEmail(email) {
     return /.+@.+\..+/.test(email);
   }
 
   function handleRegister(e) {
     e.preventDefault();
+    console.log('handleRegister called', { regEmail, regPassword, regFullName });
     if (!validateEmail(regEmail)) {
+      console.log('Setting message: Invalid email');
       setRegMsg('Invalid email');
       return;
     }
     if (!regPassword || !regFullName) {
+      console.log('Setting message: All fields required');
       setRegMsg('All fields required');
       return;
     }
+    console.log('Setting message: Registration successful');
     setRegMsg('Registration successful');
-    setView('login');
+    // Don't auto-switch view - let user see the success message
+    // They can click Login button to proceed
   }
 
   function handleLogin(e) {
@@ -62,10 +73,10 @@ function App() {
         <button onClick={() => setView('login')}>Login</button>
       </nav>
       {view === 'register' && (
-        <form onSubmit={handleRegister}>
+        <div>
           <h2>Register</h2>
           <input
-            type="email"
+            type="text"
             name="email"
             placeholder="Email"
             value={regEmail}
@@ -85,15 +96,21 @@ function App() {
             value={regFullName}
             onChange={e => setRegFullName(e.target.value)}
           />
-          <button type="submit">Register</button>
-          {regMsg && <div>{regMsg}</div>}
-        </form>
+          <button type="button" data-testid="register-submit-button" onClick={() => {
+            console.log('Register button clicked!');
+            const fakeEvent = { preventDefault: () => {} };
+            handleRegister(fakeEvent);
+          }}>Register</button>
+          <div data-testid="registration-message" style={{ display: regMsg ? 'block' : 'none' }}>
+            {regMsg || 'No message'}
+          </div>
+        </div>
       )}
       {view === 'login' && (
-        <form onSubmit={handleLogin}>
+        <div>
           <h2>Login</h2>
           <input
-            type="email"
+            type="text"
             name="email"
             placeholder="Email"
             value={loginEmail}
@@ -106,9 +123,15 @@ function App() {
             value={loginPassword}
             onChange={e => setLoginPassword(e.target.value)}
           />
-          <button type="submit">Login</button>
-          {loginMsg && <div>{loginMsg}</div>}
-        </form>
+          <button type="button" data-testid="login-submit-button" onClick={() => {
+            console.log('Login button clicked!');
+            const fakeEvent = { preventDefault: () => {} };
+            handleLogin(fakeEvent);
+          }}>Login</button>
+          <div data-testid="login-message" style={{ display: loginMsg ? 'block' : 'none' }}>
+            {loginMsg || 'No message'}
+          </div>
+        </div>
       )}
     </div>
   );
