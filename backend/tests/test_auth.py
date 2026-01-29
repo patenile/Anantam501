@@ -1,3 +1,8 @@
+def test_health_check():
+    resp = requests.get(f"{BASE_URL}/")
+    assert resp.status_code == 200
+    assert resp.json().get("message") == "Backend is running!"
+
 import pytest
 import requests
 
@@ -38,6 +43,15 @@ def test_me(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
     resp = requests.get(f"{BASE_URL}/users/me", headers=headers)
     assert resp.status_code == 200
+
+def test_me_no_token():
+    resp = requests.get(f"{BASE_URL}/users/me")
+    assert resp.status_code == 401
+
+def test_me_invalid_token():
+    headers = {"Authorization": "Bearer invalidtoken123"}
+    resp = requests.get(f"{BASE_URL}/users/me", headers=headers)
+    assert resp.status_code == 401
 
 
 # --- Additional edge case tests ---
