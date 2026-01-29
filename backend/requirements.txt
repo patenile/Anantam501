@@ -1,6 +1,39 @@
+# Testing
+pytest
 # Backend Python requirements
+
+# Core
 fastapi
 uvicorn
 psycopg2-binary
 sqlalchemy
 python-dotenv
+
+# Auth & Security
+passlib[bcrypt]
+bcrypt==4.1.2
+python-jose[cryptography]
+python-multipart
+
+# Pydantic (already required by FastAPI)
+
+# Pagination, Filtering, Sorting
+fastapi-pagination
+
+# File Uploads
+aiofiles
+
+# Email Notifications
+aiosmtplib
+
+# Required for Pydantic email validation
+email-validator
+
+# Admin/Management
+alembic
+
+# Logging
+loguru
+
+# Testing
+requests

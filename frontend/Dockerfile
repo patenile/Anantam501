@@ -13,6 +13,10 @@ RUN npm install
 # Copy source
 COPY . .
 
+
+# Run tests (will not fail build if no tests are defined)
+RUN npm run test
+
 # Build the app
 RUN npm run build
 
