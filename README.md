@@ -1,5 +1,8 @@
 # Anantam Home Interior Design Collaboration App
 
+![CI/CD](https://github.com/${{ github.repository }}/actions/workflows/ci-cd.yml/badge.svg)
+![Coverage](https://img.shields.io/badge/coverage-auto--generated-brightgreen)
+
 ## Project Overview
 A collaborative platform for home interior design, featuring modular architecture, AI integration, and robust local development with Docker Compose and Nginx reverse proxy.
 

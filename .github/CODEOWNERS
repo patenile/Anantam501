@@ -1,0 +1,7 @@
+# CODEOWNERS file
+# Specify code owners for different parts of the repository
+# Example: all code changes require review from @nilesh and @design-lead
+*       @nilesh @design-lead
+backend/ @backend-lead
+frontend/ @frontend-lead
+e2e/     @qa-lead
