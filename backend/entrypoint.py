@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-import subprocess
+
 
 ALEMBIC_INI = "/app/alembic.ini"
 MIGRATIONS_DIR = "/app/migrations"

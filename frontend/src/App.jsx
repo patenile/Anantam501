@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-console.log('[React App] App.jsx mounted');
+console.log("[React App] App.jsx mounted");
 
 function App() {
-  const [view, setView] = useState('home');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-  const [regFullName, setRegFullName] = useState('');
-  const [regMsg, setRegMsg] = useState('');
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [loginMsg, setLoginMsg] = useState('');
+  const [view, setView] = useState("home");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regFullName, setRegFullName] = useState("");
+  const [regMsg, setRegMsg] = useState("");
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginMsg, setLoginMsg] = useState("");
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    console.log('regMsg changed:', regMsg);
+    console.log("regMsg changed:", regMsg);
   }, [regMsg]);
 
   useEffect(() => {
-    console.log('view changed:', view);
+    console.log("view changed:", view);
   }, [view]);
 
   function validateEmail(email) {
@@ -27,19 +27,23 @@ function App() {
 
   function handleRegister(e) {
     e.preventDefault();
-    console.log('handleRegister called', { regEmail, regPassword, regFullName });
+    console.log("handleRegister called", {
+      regEmail,
+      regPassword,
+      regFullName,
+    });
     if (!validateEmail(regEmail)) {
-      console.log('Setting message: Invalid email');
-      setRegMsg('Invalid email');
+      console.log("Setting message: Invalid email");
+      setRegMsg("Invalid email");
       return;
     }
     if (!regPassword || !regFullName) {
-      console.log('Setting message: All fields required');
-      setRegMsg('All fields required');
+      console.log("Setting message: All fields required");
+      setRegMsg("All fields required");
       return;
     }
-    console.log('Setting message: Registration successful');
-    setRegMsg('Registration successful');
+    console.log("Setting message: Registration successful");
+    setRegMsg("Registration successful");
     // Don't auto-switch view - let user see the success message
     // They can click Login button to proceed
   }
@@ -48,9 +52,9 @@ function App() {
     e.preventDefault();
     if (loginEmail === regEmail && loginPassword === regPassword) {
       setUser({ name: regFullName });
-      setLoginMsg('');
+      setLoginMsg("");
     } else {
-      setLoginMsg('Invalid credentials');
+      setLoginMsg("Invalid credentials");
     }
   }
 
@@ -69,10 +73,10 @@ function App() {
       <p>Your collaborative platform for home design.</p>
       <div id="mount-check">[App Mounted]</div>
       <nav>
-        <button onClick={() => setView('register')}>Register</button>
-        <button onClick={() => setView('login')}>Login</button>
+        <button onClick={() => setView("register")}>Register</button>
+        <button onClick={() => setView("login")}>Login</button>
       </nav>
-      {view === 'register' && (
+      {view === "register" && (
         <div>
           <h2>Register</h2>
           <input
@@ -80,33 +84,42 @@ function App() {
             name="email"
             placeholder="Email"
             value={regEmail}
-            onChange={e => setRegEmail(e.target.value)}
+            onChange={(e) => setRegEmail(e.target.value)}
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
             value={regPassword}
-            onChange={e => setRegPassword(e.target.value)}
+            onChange={(e) => setRegPassword(e.target.value)}
           />
           <input
             type="text"
             name="full_name"
             placeholder="Full Name"
             value={regFullName}
-            onChange={e => setRegFullName(e.target.value)}
+            onChange={(e) => setRegFullName(e.target.value)}
           />
-          <button type="button" data-testid="register-submit-button" onClick={() => {
-            console.log('Register button clicked!');
-            const fakeEvent = { preventDefault: () => {} };
-            handleRegister(fakeEvent);
-          }}>Register</button>
-          <div data-testid="registration-message" style={{ display: regMsg ? 'block' : 'none' }}>
-            {regMsg || 'No message'}
+          <button
+            type="button"
+            data-testid="register-submit-button"
+            onClick={() => {
+              console.log("Register button clicked!");
+              const fakeEvent = { preventDefault: () => {} };
+              handleRegister(fakeEvent);
+            }}
+          >
+            Register
+          </button>
+          <div
+            data-testid="registration-message"
+            style={{ display: regMsg ? "block" : "none" }}
+          >
+            {regMsg || "No message"}
           </div>
         </div>
       )}
-      {view === 'login' && (
+      {view === "login" && (
         <div>
           <h2>Login</h2>
           <input
@@ -114,22 +127,31 @@ function App() {
             name="email"
             placeholder="Email"
             value={loginEmail}
-            onChange={e => setLoginEmail(e.target.value)}
+            onChange={(e) => setLoginEmail(e.target.value)}
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
             value={loginPassword}
-            onChange={e => setLoginPassword(e.target.value)}
+            onChange={(e) => setLoginPassword(e.target.value)}
           />
-          <button type="button" data-testid="login-submit-button" onClick={() => {
-            console.log('Login button clicked!');
-            const fakeEvent = { preventDefault: () => {} };
-            handleLogin(fakeEvent);
-          }}>Login</button>
-          <div data-testid="login-message" style={{ display: loginMsg ? 'block' : 'none' }}>
-            {loginMsg || 'No message'}
+          <button
+            type="button"
+            data-testid="login-submit-button"
+            onClick={() => {
+              console.log("Login button clicked!");
+              const fakeEvent = { preventDefault: () => {} };
+              handleLogin(fakeEvent);
+            }}
+          >
+            Login
+          </button>
+          <div
+            data-testid="login-message"
+            style={{ display: loginMsg ? "block" : "none" }}
+          >
+            {loginMsg || "No message"}
           </div>
         </div>
       )}

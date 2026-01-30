@@ -1,10 +1,8 @@
-
 import subprocess
 import sys
 import os
 
-
-    # All backend Postgres-related test groups (name, file)
+# All backend Postgres-related test groups (name, file)
 POSTGRES_TEST_GROUPS = [
     ("Auth API Tests", "/app/tests/test_auth.py"),
     ("Migration Tests", "/app/tests/test_migrations.py"),
@@ -15,17 +13,35 @@ POSTGRES_TEST_GROUPS = [
     ("PostgreSQL More Advanced Tests", "/app/tests/test_postgres_more.py"),
 ]
 
+
 def postgres_test_cmd(test_file):
     return [
-        "docker", "compose", "-f", "infra/docker-compose.yml", "exec",
-        "-e", "TEST_DB=anantam_test",
-        "-e", "TEST_DB_USER=anantam",
-        "-e", "TEST_DB_PASSWORD=supersecret",
-        "-e", "TEST_DB_HOST=db",
-        "-e", "TEST_DB_PORT=5432",
-        "-e", "TEST_DATABASE_URL=postgresql://anantam:supersecret@db:5432/anantam_test",
-        "-e", "DATABASE_URL=postgresql://anantam:supersecret@db:5432/anantam_test",
-        "backend", "pytest", test_file, "--maxfail=10", "--disable-warnings", "-v", "--tb=short"
+        "docker",
+        "compose",
+        "-f",
+        "infra/docker-compose.yml",
+        "exec",
+        "-e",
+        "TEST_DB=anantam_test",
+        "-e",
+        "TEST_DB_USER=anantam",
+        "-e",
+        "TEST_DB_PASSWORD=supersecret",
+        "-e",
+        "TEST_DB_HOST=db",
+        "-e",
+        "TEST_DB_PORT=5432",
+        "-e",
+        "TEST_DATABASE_URL=postgresql://anantam:supersecret@db:5432/anantam_test",
+        "-e",
+        "DATABASE_URL=postgresql://anantam:supersecret@db:5432/anantam_test",
+        "backend",
+        "pytest",
+        test_file,
+        "--maxfail=10",
+        "--disable-warnings",
+        "-v",
+        "--tb=short",
     ]
 
 
@@ -33,13 +49,25 @@ TEST_COMMANDS = [
     (name, postgres_test_cmd(test_file)) for name, test_file in POSTGRES_TEST_GROUPS
 ]
 
-FRONTEND_TEST = ("Frontend Unit Tests", ["docker", "compose", "-f", "infra/docker-compose.yml", "exec", "frontend", "npm", "run", "test"])
+FRONTEND_TEST = (
+    "Frontend Unit Tests",
+    [
+        "docker",
+        "compose",
+        "-f",
+        "infra/docker-compose.yml",
+        "exec",
+        "frontend",
+        "npm",
+        "run",
+        "test",
+    ],
+)
 
 # E2E Playwright test command (run from e2e/ directory)
 E2E_TEST = ("E2E Playwright Tests", ["npx", "playwright", "test"])
 
 ALL_COMMANDS = TEST_COMMANDS + [FRONTEND_TEST, E2E_TEST]
-
 
 
 def ensure_playwright_installed():
@@ -57,6 +85,7 @@ def ensure_playwright_installed():
     if result.returncode != 0:
         print("[E2E] Playwright browser install failed.")
         sys.exit(result.returncode)
+
 
 def main():
     # If 'postgres' is passed as an argument, only run Postgres-related tests
@@ -92,6 +121,7 @@ def main():
         print("\n[TEST SUITE] All tests passed!\n")
     else:
         print("\n[TEST SUITE] Some tests failed. See summary above.\n")
+
 
 if __name__ == "__main__":
     main()

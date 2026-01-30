@@ -6,7 +6,10 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "echo \"No frontend tests defined yet\" && exit 0"
+    "test": "vitest run",
+    "lint": "prettier --check .",
+    "format": "prettier --write .",
+    "pre-commit": "npm run lint || (echo '\\033[31mPrettier found issues. Running npm run format...\\033[0m' && npm run format); npm run test && echo '\\033[32mFrontend tests passed!\\033[0m'"
   },
   "dependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -17,6 +20,7 @@
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
     "jsdom": "^27.4.0",
+    "prettier": "^3.8.1",
     "vite": "^5.0.0",
     "vitest": "^1.0.0"
   },
