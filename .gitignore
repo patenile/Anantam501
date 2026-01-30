@@ -1,0 +1,9 @@
+# Python virtual environments
+backend/.venv/
+# Node modules
+frontend/node_modules/
+e2e/node_modules/
+# Environment files
+.env
+infra/.env
+infra/.env_bk
