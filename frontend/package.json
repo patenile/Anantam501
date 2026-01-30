@@ -22,7 +22,7 @@
     "jsdom": "^27.4.0",
     "prettier": "^3.8.1",
     "vite": "^5.0.0",
-    "vitest": "^1.0.0"
+    "vitest": "^4.0.18"
   },
   "test": {
     "globals": true,
