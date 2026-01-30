@@ -159,6 +159,13 @@ jobs:
           cd backend
           pip install pytest-cov
           pytest --cov=.
+      - name: Upload backend coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: backend/coverage.xml
+          flags: backend
+          name: codecov-backend
       - name: Upload backend coverage report
         uses: actions/upload-artifact@v4
         with:
@@ -188,6 +195,13 @@ jobs:
         run: |
           cd frontend
           npm test -- --coverage --watchAll=false
+      - name: Upload frontend coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: frontend/coverage/lcov.info
+          flags: frontend
+          name: codecov-frontend
       - name: Upload frontend coverage report
         uses: actions/upload-artifact@v4
         with:
