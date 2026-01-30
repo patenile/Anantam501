@@ -232,7 +232,11 @@ Use Testing Library or Cypress/Playwright to simulate user interactions and veri
 Database migrations and data integrity:
 
 Test Alembic migrations on a fresh database and with real upgrade/downgrade scenarios.
-End-to-end (E2E) tests:
+End-to-end (E2E) tests: Below are the command to run E2E tests manually
+cd e2e
+npm install
+npx playwright test
+npx playwright test --ui
 
 Automate browser-based flows (login, registration, CRUD) using Cypress or Playwright.
 CI/CD pipeline:
