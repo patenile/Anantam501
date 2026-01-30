@@ -1,5 +1,10 @@
 # Testing
 pytest
+# Pre-commit and code quality
+pre-commit
+black
+flake8
+flake8-bugbear
 # Backend Python requirements
 
 # Core

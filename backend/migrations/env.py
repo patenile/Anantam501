@@ -4,7 +4,8 @@ from sqlalchemy import pool
 from alembic import context
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from database import Base  # noqa
 from models import *  # noqa
 from database import DATABASE_URL
@@ -19,6 +20,7 @@ fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
 
+
 def run_migrations_offline():
     url = DATABASE_URL
     context.configure(
@@ -27,12 +29,13 @@ def run_migrations_offline():
     with context.begin_transaction():
         context.run_migrations()
 
+
 def run_migrations_online():
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
-        url=DATABASE_URL
+        url=DATABASE_URL,
     )
     with connectable.connect() as connection:
         context.configure(
@@ -40,6 +43,7 @@ def run_migrations_online():
         )
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

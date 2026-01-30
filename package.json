@@ -2,5 +2,10 @@
   "devDependencies": {
     "@playwright/test": "^1.58.0",
     "playwright": "^1.58.0"
+  },
+  "scripts": {
+    "pre-commit:frontend": "cd frontend && npm run pre-commit",
+    "pre-commit": "echo '\n\\033[33m[WARNING]\\033[0m Backend, migration, and ALL PostgreSQL-related tests (test_postgres*, test_postgres_schema.py) are currently DISABLED. Remember to re-enable them later! See todo.md for details.\n' && npm run pre-commit:frontend",
+    "format": "cd frontend && npm run format && cd ../e2e && npm run format"
   }
 }

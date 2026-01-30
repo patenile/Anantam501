@@ -11,18 +11,14 @@ DB_HOST = os.getenv("TEST_DB_HOST", "db")
 DB_PORT = os.getenv("TEST_DB_PORT", "5432")
 DATABASE_URL = os.getenv(
     "TEST_DATABASE_URL",
-    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}",
 )
 
 
 def test_psycopg2_connection():
     """Test direct connection to PostgreSQL using psycopg2."""
     conn = psycopg2.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
+        dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT
     )
     cur = conn.cursor()
     cur.execute("SELECT 1")
@@ -47,5 +43,5 @@ def test_authentication_failure():
             user=DB_USER,
             password="wrongpassword",
             host=DB_HOST,
-            port=DB_PORT
+            port=DB_PORT,
         )
