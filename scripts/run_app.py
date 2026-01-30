@@ -240,7 +240,6 @@ def main():
 
         # Run Alembic migrations inside backend container
         print("[STEP] Running Alembic migrations in backend container ...")
-        print(f"[DEBUG] Using backend container ID: {backend_container_id}")
         print(f"[DEBUG] infra_dir: {infra_dir}")
         print(f"[DEBUG] Current working directory: {os.getcwd()}")
         print(f"[DEBUG] Environment: {os.environ}")
@@ -251,6 +250,11 @@ def main():
         except Exception as e:
             print(f"[WARN] Could not determine backend container ID: {e}")
             backend_container_id = None
+        if not backend_container_id:
+            print("[FATAL] Could not determine backend container ID. Alembic migration cannot proceed.")
+            subprocess.run(['docker', 'compose', 'down'], cwd=infra_dir)
+            sys.exit(1)
+        print(f"[DEBUG] Using backend container ID: {backend_container_id}")
         if backend_container_id:
             # Debug: List /app and show alembic.ini contents before running Alembic
             print("[DEBUG] Listing /app directory in backend container:")

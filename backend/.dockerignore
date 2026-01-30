@@ -1,10 +1,35 @@
-.venv
-__pycache__
+# Python cache and virtual environments
+.venv/
+venv/
+ENV/
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
-.DS_Store
+*.egg-info/
+
+# Local environment files
 .env
 .env.*
-node_modules
+
+# Test and result files
+test-results/
 *.log
+*.db
+*.sqlite3
+
+# Node modules (if any)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+
+# Editor/IDE files
+*.swp
+*.bak
+*.tmp
