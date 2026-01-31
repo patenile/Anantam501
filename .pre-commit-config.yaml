@@ -1,3 +1,5 @@
+exclude: '(^backend/\.venv/|^backend/.venv/|^backend/.venv/|^backend/.venv/lib/|^backend/.venv/lib/python.*/site-packages/|^frontend/node_modules/|^e2e/node_modules/|^node_modules/|^.*\.dist-info/|^.*\.egg-info/|^.*\.pytest_cache/|^.*\.mypy_cache/)'
+repos:
   - repo: local
     hooks:
       - id: npm-pre-commit-all
@@ -5,7 +7,6 @@
         entry: npm run pre-commit
         language: system
         pass_filenames: false
-repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -24,7 +25,7 @@ repos:
       - id: flake8
         additional_dependencies: [flake8-bugbear]
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.2.5
+    rev: v2.7.1
     hooks:
       - id: prettier
         files: \.(js|jsx|ts|tsx|json|css|md)$
@@ -32,3 +33,5 @@ repos:
     rev: v1.4.0
     hooks:
       - id: detect-secrets
+        exclude: >
+          (^backend/\.venv/|^frontend/node_modules/|^e2e/node_modules/|^node_modules/|^.*\.dist-info/|^.*\.egg-info/|^.*\.pytest_cache/|^.*\.mypy_cache/)

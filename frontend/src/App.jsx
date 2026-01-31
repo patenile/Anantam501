@@ -27,21 +27,29 @@ function App() {
 
   function handleRegister(e) {
     e.preventDefault();
+    // Trim whitespace from all registration fields
+    const trimmedEmail = regEmail.trim();
+    const trimmedPassword = regPassword.trim();
+    const trimmedFullName = regFullName.trim();
     console.log("handleRegister called", {
-      regEmail,
-      regPassword,
-      regFullName,
+      regEmail: trimmedEmail,
+      regPassword: trimmedPassword,
+      regFullName: trimmedFullName,
     });
-    if (!validateEmail(regEmail)) {
+    if (!validateEmail(trimmedEmail)) {
       console.log("Setting message: Invalid email");
       setRegMsg("Invalid email");
       return;
     }
-    if (!regPassword || !regFullName) {
+    if (!trimmedPassword || !trimmedFullName) {
       console.log("Setting message: All fields required");
       setRegMsg("All fields required");
       return;
     }
+    // Save trimmed values to state for later login
+    setRegEmail(trimmedEmail);
+    setRegPassword(trimmedPassword);
+    setRegFullName(trimmedFullName);
     console.log("Setting message: Registration successful");
     setRegMsg("Registration successful");
     // Don't auto-switch view - let user see the success message
@@ -50,7 +58,13 @@ function App() {
 
   function handleLogin(e) {
     e.preventDefault();
-    if (loginEmail === regEmail && loginPassword === regPassword) {
+    // Trim whitespace from login fields
+    const trimmedLoginEmail = loginEmail.trim();
+    const trimmedLoginPassword = loginPassword.trim();
+    if (
+      trimmedLoginEmail === regEmail &&
+      trimmedLoginPassword === regPassword
+    ) {
       setUser({ name: regFullName });
       setLoginMsg("");
     } else {

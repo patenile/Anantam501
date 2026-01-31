@@ -1,10 +1,8 @@
 import os
 import subprocess
 import pytest
-import subprocess
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.pool import NullPool
-from sqlalchemy.exc import OperationalError
 
 # Always use a dedicated test DB for migration tests
 ALEMBIC_CONFIG = os.path.abspath(
@@ -42,7 +40,8 @@ def clean_test_db():
     print(f"[MIGRATION TEST] Using ONLY test DB: {TEST_DB_NAME}")
     # Terminate all connections to the test DB
     cur.execute(
-        f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{TEST_DB_NAME}'"
+        f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
+        f"WHERE datname = '{TEST_DB_NAME}'"
     )
     import pytest
 
@@ -50,7 +49,9 @@ def clean_test_db():
         cur.execute(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}")
     except Exception as e:
         print(
-            "[MIGRATION TEST][KNOWN ISSUE] Could not drop test DB due to lingering connections. This is a known limitation with Postgres and SQLAlchemy in test environments. See test_plan.md for details."
+            "[MIGRATION TEST][KNOWN ISSUE] Could not drop test DB due to lingering "
+            "connections. This is a known limitation with Postgres and SQLAlchemy in "
+            "test environments. See test_plan.md for details."
         )
         print(f"[MIGRATION TEST][DETAILS] Exception: {e}")
         pytest.xfail(
@@ -75,7 +76,8 @@ def clean_test_db():
         session.close()
         engine.dispose()
         print(
-            "[MIGRATION TEST] Aggressively closed all SQLAlchemy sessions and disposed engine."
+            "[MIGRATION TEST] Aggressively closed all \
+                SQLAlchemy sessions and disposed engine."
         )
     except Exception as e:
         print(f"[MIGRATION TEST] Engine/session cleanup error: {e}")
@@ -85,7 +87,8 @@ def clean_test_db():
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     cur = conn.cursor()
     cur.execute(
-        f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{TEST_DB_NAME}'"
+        f"SELECT pg_terminate_backend(pid) FROM pg_stat_activity "
+        f"WHERE datname = '{TEST_DB_NAME}'"
     )
     cur.execute(f"DROP DATABASE IF EXISTS {TEST_DB_NAME}")
     cur.close()
@@ -150,7 +153,9 @@ def _test_migration_downgrade(clean_test_db):
 
     if len(tables) != 0:
         print(
-            "[MIGRATION TEST][KNOWN ISSUE] Tables still exist after downgrade (expected alembic_version). This is a known limitation due to Alembic version table and teardown constraints. See test_plan.md for details."
+            "[MIGRATION TEST][KNOWN ISSUE] Tables still exist after downgrade "
+            "(expected alembic_version). This is a known limitation due to Alembic "
+            "version table and teardown constraints. See test_plan.md for details."
         )
         print(f"[MIGRATION TEST][DETAILS] Remaining tables: {tables}")
         pytest.xfail(
@@ -159,9 +164,13 @@ def _test_migration_downgrade(clean_test_db):
 
 
 # NOTE: Known migration test issues:
-# - Teardown may fail to drop the test DB due to lingering connections (Postgres/SQLAlchemy limitation).
-# - Downgrade may leave alembic_version table present; this is expected and documented in test_plan.md.
-# These are marked as xfail and will not fail CI, but are visible for future improvement.
+# - Teardown may fail to drop the test DB due \
+# to lingering connections (Postgres/SQLAlchemy \
+# limitation).
+# - Downgrade may leave alembic_version table present; \
+# this is expected and documented in test_plan.md.
+# These are marked as xfail and will not fail CI, \
+# but are visible for future improvement.
 
 
 def test_migration_idempotence():

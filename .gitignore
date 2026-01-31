@@ -7,3 +7,6 @@ e2e/node_modules/
 .env
 infra/.env
 infra/.env_bk
+
+# Ignore Python bytecode cache in backend tests
+backend/tests/__pycache__/

@@ -1,7 +1,8 @@
 # Home Interior Design Collaboration App: Requirements & Architecture
-## Integration & Embedding Guidelines
-To ensure this application can be easily integrated into existing or future systems (e.g., as a Dashboard card or micro-frontend), follow these principles:
 
+## Integration & Embedding Guidelines
+
+To ensure this application can be easily integrated into existing or future systems (e.g., as a Dashboard card or micro-frontend), follow these principles:
 
 ---
 
@@ -10,38 +11,48 @@ To ensure this application can be easily integrated into existing or future syst
 The following APIs and features are recommended for any modern application, regardless of domain. They provide a robust foundation and can be reused across projects:
 
 ### 1. User Authentication & Authorization
-  - Sign up, login, logout
-  - Password reset/change
-  - JWT or OAuth2 token management
-  - User roles/permissions
+
+- Sign up, login, logout
+- Password reset/change
+- JWT or OAuth2 token management
+- User roles/permissions
 
 ### 2. User Profile Management
-  - Get/update user profile
-  - Avatar upload
+
+- Get/update user profile
+- Avatar upload
 
 ### 3. Health Check & Status
-  - `/health` or `/status` endpoint for monitoring
+
+- `/health` or `/status` endpoint for monitoring
 
 ### 4. Audit Logging & Activity Tracking
-  - Log user actions (optional, but valuable for security/compliance)
+
+- Log user actions (optional, but valuable for security/compliance)
 
 ### 5. Error Handling & Standardized Responses
-  - Consistent error format (e.g., error codes, messages)
+
+- Consistent error format (e.g., error codes, messages)
 
 ### 6. Pagination, Filtering, and Sorting
-  - For all list endpoints
+
+- For all list endpoints
 
 ### 7. File Upload/Download
-  - Generic endpoints for handling files (images, docs, etc.)
+
+- Generic endpoints for handling files (images, docs, etc.)
 
 ### 8. API Documentation
-  - OpenAPI/Swagger auto-generated docs
+
+- OpenAPI/Swagger auto-generated docs
 
 ### 9. Admin/Management Endpoints
-  - User management, system settings (for admin users)
+
+- User management, system settings (for admin users)
 
 ### 10. Notifications (optional)
-  - Email or in-app notifications
+
+- Email or in-app notifications
 
 Including these in your base infrastructure will make future projects faster and more robust.
 
@@ -88,68 +99,70 @@ This approach will let you add the app as a dashboard card, iframe, or micro-fro
 ## 2. Text-Based ER Diagram
 
 ```
+
 User
- ├─ id (PK)
- ├─ name
- ├─ email
- ├─ role (admin, manager, team, family)
- └─ ...
+├─ id (PK)
+├─ name
+├─ email
+├─ role (admin, manager, team, family)
+└─ ...
 
 Home
- ├─ id (PK)
- ├─ name
- ├─ address
- └─ owner_id (FK: User)
+├─ id (PK)
+├─ name
+├─ address
+└─ owner_id (FK: User)
 
 Room
- ├─ id (PK)
- ├─ home_id (FK: Home)
- ├─ name
- ├─ description
- ├─ measurements
- └─ ...
+├─ id (PK)
+├─ home_id (FK: Home)
+├─ name
+├─ description
+├─ measurements
+└─ ...
 
 RoomElement
- ├─ id (PK)
- ├─ room_id (FK: Room)
- ├─ name
- ├─ description
- ├─ measurements
- └─ ...
+├─ id (PK)
+├─ room_id (FK: Room)
+├─ name
+├─ description
+├─ measurements
+└─ ...
 
 Comment
- ├─ id (PK)
- ├─ user_id (FK: User)
- ├─ room_id (FK: Room, nullable)
- ├─ element_id (FK: RoomElement, nullable)
- ├─ content
- ├─ ai_summary (optional, for AI summarization)
- ├─ created_at
- └─ ...
+├─ id (PK)
+├─ user_id (FK: User)
+├─ room_id (FK: Room, nullable)
+├─ element_id (FK: RoomElement, nullable)
+├─ content
+├─ ai_summary (optional, for AI summarization)
+├─ created_at
+└─ ...
 
 Assignment
- ├─ id (PK)
- ├─ user_id (FK: User)
- ├─ room_id (FK: Room, nullable)
- ├─ element_id (FK: RoomElement, nullable)
- ├─ assigned_by (FK: User)
- └─ ...
+├─ id (PK)
+├─ user_id (FK: User)
+├─ room_id (FK: Room, nullable)
+├─ element_id (FK: RoomElement, nullable)
+├─ assigned_by (FK: User)
+└─ ...
 
 PurchaseDetail
- ├─ id (PK)
- ├─ element_id (FK: RoomElement)
- ├─ status
- ├─ vendor
- ├─ cost
- ├─ link
- └─ ...
+├─ id (PK)
+├─ element_id (FK: RoomElement)
+├─ status
+├─ vendor
+├─ cost
+├─ link
+└─ ...
 
 ImportFile
- ├─ id (PK)
- ├─ user_id (FK: User)
- ├─ file_path
- ├─ import_type
- └─ ...
+├─ id (PK)
+├─ user_id (FK: User)
+├─ file_path
+├─ import_type
+└─ ...
+
 ```
 
 ---
@@ -324,3 +337,4 @@ This ensures important decisions are protected and only authorized users can ove
 - Use jsonb for flexible measurement storage.
 
 Let me know if you want to review or adjust any model before we move to the architecture diagram and project scaffolding.
+```

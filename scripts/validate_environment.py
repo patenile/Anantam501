@@ -1,4 +1,4 @@
-import sys
+# ...existing code...
 import shutil
 import subprocess
 
@@ -32,7 +32,8 @@ def check_tool(tool, display_name):
                 return True
             else:
                 print(
-                    f"[ERROR] {display_name} not found or not working as a Docker subcommand."
+                    f"[ERROR] {display_name} not found or not working as a "
+                    f"Docker subcommand."
                 )
                 return False
         except Exception as e:
@@ -132,17 +133,22 @@ def main():
         print("[OK] All required Python packages are installed in backend/.venv.")
     else:
         print(
-            f"[ERROR] Missing Python packages in backend/.venv: {', '.join(missing_pkgs)}"
+            f"[ERROR] Missing Python packages in backend/.venv: "
+            f"{', '.join(missing_pkgs)}"
         )
         all_ok = False
 
     if all_ok:
         print(
-            "\n[ALL OK] All required tools and Python packages are installed and meet minimum version requirements."
+            "\n[ALL OK] All required tools and Python packages are installed "
+            "and meet minimum version requirements."
         )
     else:
         print(
-            "\n[FAIL] Some required tools or Python packages are missing or do not meet version requirements. Please install or upgrade them before proceeding."
+            "\n[FAIL] Some required tools or Python packages are \
+                missing or do not meet "
+            "version requirements. Please install or upgrade\
+                them before proceeding."
         )
     print("\nValidation complete.\n")
 

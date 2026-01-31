@@ -1,12 +1,39 @@
 # Test Documentation: Anantam Home Interior Design Collaboration App
 
 ## Overview
+
 This document details the current and planned test coverage for the Anantam application, including the purpose and scope of each test type. It is intended to guide developers and reviewers in understanding the quality and reliability checks in place for both backend and frontend components.
 
 ---
 
 ## 1. Backend Tests
+
+## 2. Frontend UI Tests (React, Vitest, Testing Library)
+
+- **Location:** `frontend/src/App.test.jsx`
+- **Framework:** Vitest, React Testing Library
+- **Purpose:** Ensure robust coverage of user actions, state management, navigation, and UI feedback in the main React app.
+- **Tests Implemented:**
+  - Renders the main heading and home view.
+  - Switches between Register and Login views.
+  - Validates registration: invalid email, missing fields, successful registration.
+  - Validates login: wrong credentials, correct credentials, logout, and re-login.
+  - Navigation edge cases: switching views, state persistence, and field value retention.
+  - Registration and login with leading/trailing whitespace.
+  - Rapid switching between Register/Login views (stress test for state).
+  - State persistence across multiple logins and logouts.
+- **What They Test:**
+  - User interaction flows for registration and login.
+  - UI feedback for validation errors and success messages.
+  - State management and edge cases in navigation and user session.
+  - Robustness of the UI against rapid user actions and input edge cases.
+- **Why These Tests Are Needed:**
+  - To ensure the frontend is user-friendly, robust, and bug-free for all major flows.
+  - To catch regressions in UI logic, state, and validation early in CI/CD.
+  - To provide confidence that the app handles real-world user behavior and edge cases gracefully.
+
 ### 1.7. More Advanced PostgreSQL Scenarios (Implemented)
+
 - **Location:** `backend/tests/test_postgres_more.py`
 - **Framework:** pytest, psycopg2, SQLAlchemy
 - **Purpose:** Test advanced PostgreSQL features: partitioned tables, triggers, views, materialized views, full-text search, time zones, large objects, and extension usage.
@@ -25,7 +52,9 @@ This document details the current and planned test coverage for the Anantam appl
   - To ensure the app can safely leverage the full power of PostgreSQL.
   - To catch subtle bugs and integration issues with advanced DB features before production.
   - To provide confidence for future DB design and feature expansion.
+
 ### 1.6. Advanced PostgreSQL Scenarios (Implemented)
+
 - **Location:** `backend/tests/test_postgres_extra.py`
 - **Framework:** pytest, psycopg2, SQLAlchemy
 - **Purpose:** Test advanced and real-world PostgreSQL features: foreign keys, composite indexes, JSONB, array types, permissions, performance, and concurrent access.
@@ -44,7 +73,9 @@ This document details the current and planned test coverage for the Anantam appl
   - To ensure the app is robust for complex, high-load, and real-world DB usage.
   - To catch concurrency, permission, and advanced feature bugs before production.
   - To provide confidence in using PostgreSQL’s full feature set in your stack.
+
 ### 1.5. Advanced PostgreSQL Database Tests (Implemented)
+
 - **Location:** `backend/tests/test_postgres_advanced.py`
 - **Framework:** pytest, psycopg2, SQLAlchemy
 - **Purpose:** Ensure robust, real-world DB coverage by testing CRUD, transactions, constraints, data types, and error handling using both raw SQL and SQLAlchemy.
@@ -63,7 +94,9 @@ This document details the current and planned test coverage for the Anantam appl
   - To catch subtle DB bugs/regressions before they reach production.
   - To ensure the app’s DB layer is safe, flexible, and standards-compliant.
   - To provide confidence in migrations, schema changes, and advanced DB usage.
+
 ### 1.4. PostgreSQL Schema and Table Creation Tests (Implemented)
+
 - **Location:** `backend/tests/test_postgres_schema.py`
 - **Framework:** pytest, psycopg2, SQLAlchemy
 - **Purpose:** Ensure the application can create and clean up schemas and tables in PostgreSQL, using both raw SQL and SQLAlchemy, to verify DB flexibility and correctness.
@@ -78,7 +111,9 @@ This document details the current and planned test coverage for the Anantam appl
   - To ensure the app can manage DB schemas/tables programmatically and flexibly.
   - To catch migration, permission, or DB config issues early in CI/CD.
   - To provide a foundation for CRUD, transaction, and advanced DB tests.
+
 ### 1.2. PostgreSQL Database Tests (Implemented)
+
 - **Location:** `backend/tests/test_postgres_connection.py`
 - **Framework:** pytest, psycopg2, SQLAlchemy
 - **Purpose:** Ensure the application can connect to PostgreSQL, authenticate, and handle connection errors robustly, using both raw SQL and SQLAlchemy.
@@ -93,7 +128,9 @@ This document details the current and planned test coverage for the Anantam appl
   - To catch DB connection/configuration issues early in CI/CD.
   - To ensure the app fails securely and predictably on DB auth errors.
   - To provide a foundation for more advanced DB tests (schema, CRUD, transactions, etc.).
+
 ### 1.1. Integration/API Tests (Implemented)
+
 - **Location:** `backend/tests/test_auth.py`
 - **Framework:** pytest
 - **Purpose:** Test backend authentication endpoints as a whole, including DB, auth, and business logic, with a focus on real-world edge cases and security.
@@ -116,8 +153,8 @@ This document details the current and planned test coverage for the Anantam appl
   - To catch regressions and integration issues early in CI/CD pipelines.
   - To provide confidence that the authentication system is robust against real-world attack scenarios.
 
-
 ### 1.3. Migration/Data Integrity Tests (Implemented)
+
 - **Location:** `backend/tests/test_migrations.py`
 - **Framework:** pytest, Alembic, SQLAlchemy
 - **Purpose:** Ensure Alembic migrations apply cleanly, are idempotent, and data/schema remain consistent through upgrade/downgrade cycles.
@@ -136,6 +173,7 @@ This document details the current and planned test coverage for the Anantam appl
   - To document and track known limitations (e.g., teardown xfail) for future improvement.
 
 ### 1.3. Migration/Data Integrity Tests (Planned)
+
 - **Purpose:** Ensure Alembic migrations apply cleanly and data remains consistent.
 - **Planned Tests:**
   - Migration on fresh DB, upgrade/downgrade cycles.
@@ -146,6 +184,7 @@ This document details the current and planned test coverage for the Anantam appl
 ## 2. Frontend Tests
 
 ### 2.1. Unit Tests (Implemented)
+
 - **Location:** `frontend/src/App.test.jsx`
 - **Framework:** Vitest, Testing Library
 - **Purpose:** Verify React components render and behave as expected in isolation.
@@ -155,6 +194,7 @@ This document details the current and planned test coverage for the Anantam appl
   - Component rendering, presence of key UI elements.
 
 ### 2.2. Integration/UI Tests (Planned)
+
 - **Purpose:** Test component interactions, state changes, and API integration.
 - **Planned Tests:**
   - Simulate user actions (form fill, button click) and check UI updates.
@@ -163,6 +203,7 @@ This document details the current and planned test coverage for the Anantam appl
   - User experience, error messages, and correct API integration.
 
 ### 2.3. End-to-End (E2E) Tests (Planned)
+
 - **Purpose:** Automate real user flows across the stack (frontend + backend + DB).
 - **Planned Tools:** Cypress or Playwright
 - **Planned Tests:**
@@ -174,6 +215,7 @@ This document details the current and planned test coverage for the Anantam appl
 ---
 
 ## 3. CI/CD Pipeline Tests (Planned)
+
 - **Purpose:** Ensure all tests run automatically on every push/PR.
 - **Planned Steps:**
   - Install dependencies, run backend and frontend tests, build images, and (optionally) run E2E tests in CI.
@@ -183,19 +225,105 @@ This document details the current and planned test coverage for the Anantam appl
 ---
 
 ## Summary Table
-| Test Type         | Status      | Purpose/Scope                                      |
-|-------------------|------------|----------------------------------------------------|
-| Backend Unit      | Implemented| Auth endpoints, password logic, DB ops              |
-| Backend API       | Planned    | End-to-end API, error handling, DB state            |
-| Migration         | Planned    | Alembic migrations, schema/data integrity           |
-| Frontend Unit     | Implemented| Component rendering, UI presence                    |
-| Frontend UI       | Planned    | User actions, state, API integration                |
-| E2E               | Planned    | Full user flows, cross-service integration          |
-| CI/CD             | Planned    | Automated test runs, build checks                   |
+
+| Test Type    | Status      | Purpose/Scope                                                |
+| ------------ | ----------- | ------------------------------------------------------------ |
+| Backend Unit | Implemented | Auth endpoints, password logic, DB ops                       |
+| Backend API  | Planned     | End-to-end API, error handling, DB state, advanced scenarios |
+
+## 1.x. Backend API Tests (Planned)
+
+- **Location:** `backend/tests/test_api.py` (suggested)
+- **Framework:** pytest, requests or httpx, SQLAlchemy
+- **Purpose:** Ensure all backend API endpoints work as intended, handle errors gracefully, and maintain correct DB state. Cover both standard and advanced/edge-case scenarios.
+
+### Planned Test Scenarios
+
+- **Basic API Flows:**
+
+  - CRUD for all main resources (users, projects, designs, comments, etc.)
+  - Authenticated and unauthenticated access (ensure proper 401/403 handling)
+  - Input validation: required fields, type checks, length, format
+  - Error handling: invalid input, not found, permission denied, server errors
+  - Pagination, filtering, and sorting endpoints
+  - API versioning and backward compatibility (if applicable)
+
+- **Advanced/Edge-Case API Tests:**
+  - Bulk operations (batch create/update/delete)
+  - Rate limiting and throttling (simulate rapid requests)
+  - Concurrency: simultaneous updates/deletes to the same resource
+  - Data consistency: verify DB state after complex flows (e.g., cascading deletes)
+  - Security: test for common API vulnerabilities (IDOR, mass assignment, injection, etc.)
+  - Large payloads and file uploads (if supported)
+  - Webhook/event delivery and error handling (if applicable)
+  - API error response structure (standardized error objects, trace IDs, etc.)
+  - Integration with external services (mocked or real, as appropriate)
+
+### Example Test Ideas
+
+- `test_create_project_valid_and_invalid`: Validates project creation with good/bad data
+- `test_update_user_permissions`: Ensures only admins can update user roles
+- `test_delete_resource_cascade`: Deleting a project removes all related designs/comments
+- `test_bulk_user_import`: Bulk create users and verify all are present
+- `test_rate_limit_exceeded`: Simulate rapid requests and expect 429 response
+- `test_concurrent_edit_conflict`: Two users edit the same resource at once; check for race conditions
+- `test_api_error_format`: All errors return consistent structure and codes
+
+### Why These Tests Are Needed
+
+- To ensure the API is robust, secure, and reliable for all client applications
+- To catch regressions and edge-case bugs before production
+- To validate that business rules and security policies are enforced at the API layer
+- To provide confidence for frontend, mobile, and third-party integrations
+
+---
+
+| Migration | Implemented| Alembic migrations, schema/data integrity |
+| Frontend Unit | Implemented| Component rendering, UI presence |
+| Frontend UI | Implemented| User actions, state, navigation, validation, edge cases |
+| E2E | Planned | Full user flows, cross-service integration |
+| CI/CD | Planned | Automated test runs, build checks |
+
+---
+
+## Test Coverage Review
+
+### Implemented Tests
+
+- **Backend Unit:**
+  - Auth endpoints, password logic, DB operations (pytest, direct and ORM SQL, error handling)
+  - Advanced PostgreSQL: partitioned tables, triggers, views, full-text search, time zones, LOBs, extensions
+  - Alembic migration tests: upgrade, downgrade, idempotence, schema/data integrity
+- **Frontend Unit:**
+  - Component rendering and UI presence (React, Vitest, Testing Library)
+- **Frontend UI:**
+  - User actions: registration, login, logout, navigation between views
+  - State management: field persistence, session state, edge cases
+  - Validation: invalid email, missing fields, whitespace handling
+  - UI feedback: error/success messages, rapid switching, state reset
+  - Advanced scenarios: multiple logins, stress test navigation, state persistence
+
+### Planned/Partially Implemented Tests
+
+- **Backend API:**
+  - End-to-end API tests for all endpoints, error handling, and DB state validation
+- **E2E:**
+  - Full user flows across frontend, backend, and DB (Playwright/Cypress)
+  - Registration, login, dashboard, CRUD, collaboration
+- **CI/CD:**
+  - Automated test runs, build checks, coverage reporting, artifact upload
+
+## Recommendations & Next Steps
+
+- Expand backend API tests to cover all endpoints and error cases
+- Implement E2E tests for real user flows and cross-service integration
+- Integrate all tests into CI/CD for automated quality gates
+- Continue to update this document as new tests are added or coverage expands
 
 ---
 
 ## Next Steps
+
 - Implement backend API and migration tests.
 - Expand frontend tests to cover user interactions and API integration.
 - Set up E2E automation and CI/CD pipeline for full-stack reliability.
@@ -220,7 +348,6 @@ Automate browser-based flows (login, registration, CRUD) using Cypress or Playwr
 CI/CD pipeline:
 
 Set up GitHub Actions or similar to run all tests automatically on push/PR.
-
 
 Integration/API tests:
 

@@ -1,18 +1,7 @@
 import os
 import pytest
 import psycopg2
-from sqlalchemy import (
-    create_engine,
-    text,
-    MetaData,
-    Table,
-    Column,
-    Integer,
-    String,
-    DateTime,
-    func,
-)
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, text
 import datetime
 
 DB_NAME = os.getenv("TEST_DB", "anantam_test")
@@ -43,12 +32,15 @@ def setup_partitioned_table():
         )
         conn.execute(
             text(
-                f"CREATE TABLE {SCHEMA_NAME}.{PARTITIONED_TABLE} (id INT, created_at DATE) PARTITION BY RANGE (created_at);"
+                f"CREATE TABLE {SCHEMA_NAME}.{PARTITIONED_TABLE} "
+                f"(id INT, created_at DATE) PARTITION BY RANGE (created_at);"
             )
         )
         conn.execute(
             text(
-                f"CREATE TABLE {SCHEMA_NAME}.{PARTITIONED_TABLE}_2024 PARTITION OF {SCHEMA_NAME}.{PARTITIONED_TABLE} FOR VALUES FROM ('2024-01-01') TO ('2025-01-01');"
+                f"CREATE TABLE {SCHEMA_NAME}.{PARTITIONED_TABLE}_2024 PARTITION OF "
+                f"{SCHEMA_NAME}.{PARTITIONED_TABLE} "
+                "FOR VALUES FROM ('2024-01-01') TO ('2025-01-01');"
             )
         )
     yield
@@ -63,7 +55,8 @@ def test_partitioned_table_insert_and_select(setup_partitioned_table):
     with engine.connect() as conn:
         conn.execute(
             text(
-                f"INSERT INTO {SCHEMA_NAME}.{PARTITIONED_TABLE} (id, created_at) VALUES (1, '2024-06-01');"
+                f"INSERT INTO {SCHEMA_NAME}.{PARTITIONED_TABLE} "
+                f"(id, created_at) VALUES (1, '2024-06-01');"
             )
         )
         result = conn.execute(
@@ -81,17 +74,23 @@ def setup_trigger_table():
         )
         conn.execute(
             text(
-                f"CREATE TABLE {SCHEMA_NAME}.{TRIGGER_TABLE} (id SERIAL PRIMARY KEY, val INT, updated_at TIMESTAMP);"
+                f"CREATE TABLE {SCHEMA_NAME}.{TRIGGER_TABLE} "
+                f"(id SERIAL PRIMARY KEY, val INT, updated_at TIMESTAMP);"
             )
         )
         conn.execute(
             text(
-                f"CREATE OR REPLACE FUNCTION update_timestamp() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = NOW(); RETURN NEW; END; $$ LANGUAGE plpgsql;"
+                "CREATE OR REPLACE FUNCTION update_timestamp() "
+                "RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = NOW(); \
+                    RETURN NEW; END; $$ LANGUAGE plpgsql;"
             )
         )
         conn.execute(
             text(
-                f"CREATE TRIGGER set_timestamp BEFORE UPDATE ON {SCHEMA_NAME}.{TRIGGER_TABLE} FOR EACH ROW EXECUTE FUNCTION update_timestamp();"
+                f"CREATE TRIGGER set_timestamp BEFORE UPDATE ON "
+                f"{SCHEMA_NAME}.{TRIGGER_TABLE} "
+                "FOR EACH ROW EXECUTE FUNCTION "
+                "update_timestamp();"
             )
         )
     yield
@@ -99,7 +98,7 @@ def setup_trigger_table():
         conn.execute(
             text(f"DROP TABLE IF EXISTS {SCHEMA_NAME}.{TRIGGER_TABLE} CASCADE;")
         )
-        conn.execute(text(f"DROP FUNCTION IF EXISTS update_timestamp();"))
+        conn.execute(text("DROP FUNCTION IF EXISTS update_timestamp();"))
 
 
 def test_trigger_functionality(setup_trigger_table):
@@ -124,13 +123,19 @@ def setup_views():
     engine = create_engine(DATABASE_URL)
     with engine.connect() as conn:
         conn.execute(text(f"DROP VIEW IF EXISTS {SCHEMA_NAME}.{VIEW_NAME};"))
-        conn.execute(text(f"CREATE VIEW {SCHEMA_NAME}.{VIEW_NAME} AS SELECT 1 AS val;"))
+        conn.execute(
+            text(
+                f"CREATE VIEW {SCHEMA_NAME}.{VIEW_NAME} \
+            AS SELECT 1 AS val;"
+            )
+        )
         conn.execute(
             text(f"DROP MATERIALIZED VIEW IF EXISTS {SCHEMA_NAME}.{MVIEW_NAME};")
         )
         conn.execute(
             text(
-                f"CREATE MATERIALIZED VIEW {SCHEMA_NAME}.{MVIEW_NAME} AS SELECT NOW() AS ts;"
+                f"CREATE MATERIALIZED VIEW {SCHEMA_NAME}.{MVIEW_NAME} \
+                    AS SELECT NOW() AS ts;"
             )
         )
     yield
@@ -144,9 +149,19 @@ def setup_views():
 def test_views_and_materialized_views(setup_views):
     engine = create_engine(DATABASE_URL)
     with engine.connect() as conn:
-        result = conn.execute(text(f"SELECT val FROM {SCHEMA_NAME}.{VIEW_NAME};"))
+        result = conn.execute(
+            text(
+                f"SELECT val FROM \
+            {SCHEMA_NAME}.{VIEW_NAME};"
+            )
+        )
         assert result.fetchone()[0] == 1
-        result = conn.execute(text(f"SELECT ts FROM {SCHEMA_NAME}.{MVIEW_NAME};"))
+        result = conn.execute(
+            text(
+                f"SELECT ts FROM \
+            {SCHEMA_NAME}.{MVIEW_NAME};"
+            )
+        )
         assert result.fetchone()[0] is not None
 
 
@@ -156,17 +171,21 @@ def test_full_text_search():
         conn.execute(text(f"DROP TABLE IF EXISTS {SCHEMA_NAME}.{FTS_TABLE};"))
         conn.execute(
             text(
-                f"CREATE TABLE {SCHEMA_NAME}.{FTS_TABLE} (id SERIAL PRIMARY KEY, content TEXT);"
+                f"CREATE TABLE {SCHEMA_NAME}.{FTS_TABLE} \
+                    (id SERIAL PRIMARY KEY, content TEXT);"
             )
         )
         conn.execute(
             text(
-                f"INSERT INTO {SCHEMA_NAME}.{FTS_TABLE} (content) VALUES ('hello world'), ('goodbye world');"
+                f"INSERT INTO {SCHEMA_NAME}.{FTS_TABLE} (content) \
+                    VALUES ('hello world'), ('goodbye world');"
             )
         )
         result = conn.execute(
             text(
-                f"SELECT id FROM {SCHEMA_NAME}.{FTS_TABLE} WHERE to_tsvector('english', content) @@ plainto_tsquery('english', 'hello');"
+                f"SELECT id FROM {SCHEMA_NAME}.{FTS_TABLE} WHERE \
+                    to_tsvector('english', content) \
+                        @@ plainto_tsquery('english', 'hello');"
             )
         )
         assert result.fetchone()[0] == 1
@@ -179,7 +198,8 @@ def test_time_zone_handling():
         conn.execute(text(f"DROP TABLE IF EXISTS {SCHEMA_NAME}.tz_table;"))
         conn.execute(
             text(
-                f"CREATE TABLE {SCHEMA_NAME}.tz_table (id SERIAL PRIMARY KEY, ts TIMESTAMPTZ);"
+                f"CREATE TABLE {SCHEMA_NAME}.tz_table (id SERIAL PRIMARY KEY,\
+                    ts TIMESTAMPTZ);"
             )
         )
         now_utc = datetime.datetime.now(datetime.timezone.utc)

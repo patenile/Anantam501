@@ -1,6 +1,5 @@
 import os
 import pytest
-import psycopg2
 from sqlalchemy import (
     create_engine,
     text,
@@ -82,7 +81,8 @@ def test_composite_index(setup_advanced_schema):
         # Index should exist
         result = conn.execute(
             text(
-                f"SELECT indexname FROM pg_indexes WHERE schemaname = :schema AND tablename = :table;"
+                "SELECT indexname FROM pg_indexes WHERE schemaname = :schema "
+                "AND tablename = :table;"
             ),
             {"schema": SCHEMA_NAME, "table": PARENT_TABLE},
         )
@@ -107,9 +107,15 @@ def test_jsonb_and_array_types(setup_advanced_schema):
 
 def test_permissions_and_error():
     # Try to connect with a non-existent user
-    with pytest.raises(Exception):
+    import psycopg2
+
+    with pytest.raises(psycopg2.OperationalError):
         psycopg2.connect(
-            dbname=DB_NAME, user="nouser", password="bad", host=DB_HOST, port=DB_PORT
+            dbname=DB_NAME,
+            user="nouser",
+            password="bad",  # pragma: allowlist secret
+            host=DB_HOST,
+            port=DB_PORT,  # pragma: allowlist secret
         )
 
 

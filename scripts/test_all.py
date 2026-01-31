@@ -26,15 +26,23 @@ def postgres_test_cmd(test_file):
         "-e",
         "TEST_DB_USER=anantam",
         "-e",
-        "TEST_DB_PASSWORD=supersecret",
+        "TEST_DB_PASSWORD=supersecret",  # pragma: allowlist secret
         "-e",
         "TEST_DB_HOST=db",
         "-e",
         "TEST_DB_PORT=5432",
         "-e",
-        "TEST_DATABASE_URL=postgresql://anantam:supersecret@db:5432/anantam_test",
+        (
+            "TEST_DATABASE_URL="
+            "postgresql://anantam:supersecret@db:5432/anantam_test"
+            # pragma: allowlist secret
+        ),
         "-e",
-        "DATABASE_URL=postgresql://anantam:supersecret@db:5432/anantam_test",
+        (
+            "DATABASE_URL="
+            "postgresql://anantam:supersecret@db:5432/anantam_test"
+            # pragma: allowlist secret
+        ),
         "backend",
         "pytest",
         test_file,
@@ -110,7 +118,7 @@ def main():
             print("\n==================== TEST SUITE END ====================\n")
             sys.exit(result.returncode)
         if result.returncode != 0 and name == "Migration Tests":
-            print(f"[TEST SUITE] Migration Tests failed, but continuing as expected.")
+            print("[TEST SUITE] Migration Tests failed, " "but continuing as expected.")
     print("\n==================== TEST SUITE END ====================\n")
     print("\nTest Summary:")
     for name, code in ran:

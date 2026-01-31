@@ -37,11 +37,13 @@ def test_sqlalchemy_connection():
 
 def test_authentication_failure():
     """Test authentication failure with wrong password."""
-    with pytest.raises(Exception):
+    import psycopg2
+
+    with pytest.raises(psycopg2.OperationalError):
         psycopg2.connect(
             dbname=DB_NAME,
             user=DB_USER,
-            password="wrongpassword",
+            password="wrongpassword",  # pragma: allowlist secret
             host=DB_HOST,
             port=DB_PORT,
         )

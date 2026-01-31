@@ -1,7 +1,7 @@
 import os
 import pytest
 import psycopg2
-from sqlalchemy import create_engine, text, MetaData, Table, Column, Integer, String
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 
 DB_NAME = os.getenv("TEST_DB", "anantam_test")
 DB_USER = os.getenv("TEST_DB_USER", "anantam")
@@ -47,14 +47,17 @@ def test_create_table_raw_sql(clean_schema):
         dbname=DB_NAME, user=DB_USER, password=DB_PASSWORD, host=DB_HOST, port=DB_PORT
     )
     cur = conn.cursor()
-    cur.execute(f"""
+    cur.execute(
+        f"""
         CREATE TABLE {SCHEMA_NAME}.{TABLE_NAME} (
             id SERIAL PRIMARY KEY,
             name VARCHAR(100) NOT NULL
         );
-    """)
+    """
+    )
     cur.execute(
-        f"SELECT table_name FROM information_schema.tables WHERE table_schema = '{SCHEMA_NAME}' AND table_name = '{TABLE_NAME}';"
+        f"SELECT table_name FROM information_schema.tables WHERE \
+            table_schema = '{SCHEMA_NAME}' AND table_name = '{TABLE_NAME}';"
     )
     assert cur.fetchone()[0] == TABLE_NAME
     cur.close()
@@ -65,7 +68,7 @@ def test_create_table_sqlalchemy(clean_schema):
     """Test creating a table in a specific schema using SQLAlchemy."""
     engine = create_engine(DATABASE_URL)
     metadata = MetaData(schema=SCHEMA_NAME)
-    test_table = Table(
+    Table(
         TABLE_NAME,
         metadata,
         Column("id", Integer, primary_key=True),

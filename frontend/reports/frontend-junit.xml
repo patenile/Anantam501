@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="7" failures="2" errors="0" time="0.977">
+    <testsuite name="src/App.test.jsx" timestamp="2026-01-30T16:15:51.981Z" hostname="Nileshs-MacBook-Air.local" tests="7" failures="2" errors="0" skipped="0" time="0.222">
+        <testcase classname="src/App.test.jsx" name="handles navigation edge cases and state reset" time="0.119">
+            <system-out>
+regMsg changed: 
+view changed: home
+view changed: register
+view changed: login
+view changed: register
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/App.test.jsx" name="trims whitespace in registration and login" time="0.041">
+            <system-out>
+regMsg changed: 
+view changed: home
+view changed: register
+Register button clicked!
+handleRegister called {
+  regEmail: [32m&apos;   spaced@example.com   &apos;[39m,
+  regPassword: [32m&apos;   spacedpass   &apos;[39m,
+  regFullName: [32m&apos;   Spaced User   &apos;[39m
+}
+Setting message: Registration successful
+regMsg changed: Registration successful
+view changed: login
+Login button clicked!
+
+            </system-out>
+            <failure message="Unable to find an accessible element with the role &quot;heading&quot; and name `/welcome, spaced user/i`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name &quot;Welcome to Anantam Home Interior Design Collaboration App&quot;:
+  [36m&lt;h1 /&gt;[39m
+
+  Name &quot;Login&quot;:
+  [36m&lt;h2 /&gt;[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name &quot;&quot;:
+  [36m&lt;nav /&gt;[39m
+
+  --------------------------------------------------
+  button:
+
+  Name &quot;Register&quot;:
+  [36m&lt;button /&gt;[39m
+
+  Name &quot;Login&quot;:
+  [36m&lt;button /&gt;[39m
+
+  Name &quot;Login&quot;:
+  [36m&lt;button[39m
+    [33mdata-testid[39m=[32m&quot;login-submit-button&quot;[39m
+    [33mtype[39m=[32m&quot;button&quot;[39m
+  [36m/&gt;[39m
+
+  --------------------------------------------------
+  textbox:
+
+  Name &quot;&quot;:
+  [36m&lt;input[39m
+    [33mname[39m=[32m&quot;email&quot;[39m
+    [33mplaceholder[39m=[32m&quot;Email&quot;[39m
+    [33mtype[39m=[32m&quot;text&quot;[39m
+    [33mvalue[39m=[32m&quot;spaced@example.com&quot;[39m
+  [36m/&gt;[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m&lt;body&gt;[39m
+  [36m&lt;div&gt;[39m
+    [36m&lt;div&gt;[39m
+      [36m&lt;h1&gt;[39m
+        [0mWelcome to Anantam Home Interior Design Collaboration App[0m
+      [36m&lt;/h1&gt;[39m
+      [36m&lt;p&gt;[39m
+        [0mYour collaborative platform for home design.[0m
+      [36m&lt;/p&gt;[39m
+      [36m&lt;div[39m
+        [33mid[39m=[32m&quot;mount-check&quot;[39m
+      [36m&gt;[39m
+        [0m[App Mounted][0m
+      [36m&lt;/div&gt;[39m
+      [36m&lt;nav&gt;[39m
+        [36m&lt;button&gt;[39m
+          [0mRegister[0m
+        [36m&lt;/button&gt;[39m
+        [36m&lt;button&gt;[39m
+          [0mLogin[0m
+        [36m&lt;/button&gt;[39m
+      [36m&lt;/nav&gt;[39m
+      [36m&lt;div&gt;[39m
+        [36m&lt;h2&gt;[39m
+          [0mLogin[0m
+        [36m&lt;/h2&gt;[39m
+        [36m&lt;input[39m
+          [33mname[39m=[32m&quot;email&quot;[39m
+          [33mplaceholder[39m=[32m&quot;Email&quot;[39m
+          [33mtype[39m=[32m&quot;text&quot;[39m
+          [33mvalue[39m=[32m&quot;spaced@example.com&quot;[39m
+        [36m/&gt;[39m
+        [36m&lt;input[39m
+          [33mname[39m=[32m&quot;password&quot;[39m
+          [33mplaceholder[39m=[32m&quot;Password&quot;[39m
+          [33mtype[39m=[32m&quot;password&quot;[39m
+          [33mvalue[39m=[32m&quot;spacedpass&quot;[39m
+        [36m/&gt;[39m
+        [36m&lt;button[39m
+          [33mdata-testid[39m=[32m&quot;login-submit-button&quot;[39m
+          [33mtype[39m=[32m&quot;button&quot;[39m
+        [36m&gt;[39m
+          [0mLogin[0m
+        [36m&lt;/button&gt;[39m
+        [36m&lt;div[39m
+          [33mdata-testid[39m=[32m&quot;login-message&quot;[39m
+          [33mstyle[39m=[32m&quot;display: block;&quot;[39m
+        [36m&gt;[39m
+          [0mInvalid credentials[0m
+        [36m&lt;/div&gt;[39m
+      [36m&lt;/div&gt;[39m
+    [36m&lt;/div&gt;[39m
+  [36m&lt;/div&gt;[39m
+[36m&lt;/body&gt;[39m" type="TestingLibraryElementError">
+TestingLibraryElementError: Unable to find an accessible element with the role &quot;heading&quot; and name `/welcome, spaced user/i`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name &quot;Welcome to Anantam Home Interior Design Collaboration App&quot;:
+  &lt;h1 /&gt;
+
+  Name &quot;Login&quot;:
+  &lt;h2 /&gt;
+
+  --------------------------------------------------
+  navigation:
+
+  Name &quot;&quot;:
+  &lt;nav /&gt;
+
+  --------------------------------------------------
+  button:
+
+  Name &quot;Register&quot;:
+  &lt;button /&gt;
+
+  Name &quot;Login&quot;:
+  &lt;button /&gt;
+
+  Name &quot;Login&quot;:
+  &lt;button
+    data-testid=&quot;login-submit-button&quot;
+    type=&quot;button&quot;
+  /&gt;
+
+  --------------------------------------------------
+  textbox:
+
+  Name &quot;&quot;:
+  &lt;input
+    name=&quot;email&quot;
+    placeholder=&quot;Email&quot;
+    type=&quot;text&quot;
+    value=&quot;spaced@example.com&quot;
+  /&gt;
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;div&gt;
+      &lt;h1&gt;
+        Welcome to Anantam Home Interior Design Collaboration App
+      &lt;/h1&gt;
+      &lt;p&gt;
+        Your collaborative platform for home design.
+      &lt;/p&gt;
+      &lt;div
+        id=&quot;mount-check&quot;
+      &gt;
+        [App Mounted]
+      &lt;/div&gt;
+      &lt;nav&gt;
+        &lt;button&gt;
+          Register
+        &lt;/button&gt;
+        &lt;button&gt;
+          Login
+        &lt;/button&gt;
+      &lt;/nav&gt;
+      &lt;div&gt;
+        &lt;h2&gt;
+          Login
+        &lt;/h2&gt;
+        &lt;input
+          name=&quot;email&quot;
+          placeholder=&quot;Email&quot;
+          type=&quot;text&quot;
+          value=&quot;spaced@example.com&quot;
+        /&gt;
+        &lt;input
+          name=&quot;password&quot;
+          placeholder=&quot;Password&quot;
+          type=&quot;password&quot;
+          value=&quot;spacedpass&quot;
+        /&gt;
+        &lt;button
+          data-testid=&quot;login-submit-button&quot;
+          type=&quot;button&quot;
+        &gt;
+          Login
+        &lt;/button&gt;
+        &lt;div
+          data-testid=&quot;login-message&quot;
+          style=&quot;display: block;&quot;
+        &gt;
+          Invalid credentials
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/App.test.jsx:31:19
+            </failure>
+        </testcase>
+        <testcase classname="src/App.test.jsx" name="handles rapid view switching without breaking state" time="0.02">
+            <system-out>
+regMsg changed: 
+view changed: home
+view changed: register
+view changed: login
+view changed: register
+view changed: login
+view changed: register
+view changed: login
+view changed: register
+view changed: login
+view changed: register
+view changed: login
+view changed: register
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/App.test.jsx" name="persists registration state across multiple logins" time="0.01">
+            <system-out>
+regMsg changed: 
+view changed: home
+view changed: register
+Register button clicked!
+handleRegister called {
+  regEmail: [32m&apos;multi@example.com&apos;[39m,
+  regPassword: [32m&apos;multipass&apos;[39m,
+  regFullName: [32m&apos;Multi User&apos;[39m
+}
+Setting message: Registration successful
+regMsg changed: Registration successful
+view changed: login
+Login button clicked!
+
+            </system-out>
+            <failure message="Found multiple elements with the text: /login/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m&lt;button&gt;[39m
+  [0mLogin[0m
+[36m&lt;/button&gt;[39m
+
+Ignored nodes: comments, script, style
+[36m&lt;h2&gt;[39m
+  [0mLogin[0m
+[36m&lt;/h2&gt;[39m
+
+Ignored nodes: comments, script, style
+[36m&lt;button[39m
+  [33mdata-testid[39m=[32m&quot;login-submit-button&quot;[39m
+  [33mtype[39m=[32m&quot;button&quot;[39m
+[36m&gt;[39m
+  [0mLogin[0m
+[36m&lt;/button&gt;[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m&lt;body&gt;[39m
+  [36m&lt;div&gt;[39m
+    [36m&lt;div&gt;[39m
+      [36m&lt;h1&gt;[39m
+        [0mWelcome to Anantam Home Interior Design Collaboration App[0m
+      [36m&lt;/h1&gt;[39m
+      [36m&lt;p&gt;[39m
+        [0mYour collaborative platform for home design.[0m
+      [36m&lt;/p&gt;[39m
+      [36m&lt;div[39m
+        [33mid[39m=[32m&quot;mount-check&quot;[39m
+      [36m&gt;[39m
+        [0m[App Mounted][0m
+      [36m&lt;/div&gt;[39m
+      [36m&lt;nav&gt;[39m
+        [36m&lt;button&gt;[39m
+          [0mRegister[0m
+        [36m&lt;/button&gt;[39m
+        [36m&lt;button&gt;[39m
+          [0mLogin[0m
+        [36m&lt;/button&gt;[39m
+      [36m&lt;/nav&gt;[39m
+      [36m&lt;div&gt;[39m
+        [36m&lt;h2&gt;[39m
+          [0mLogin[0m
+        [36m&lt;/h2&gt;[39m
+        [36m&lt;input[39m
+          [33mname[39m=[32m&quot;email&quot;[39m
+          [33mplaceholder[39m=[32m&quot;Email&quot;[39m
+          [33mtype[39m=[32m&quot;text&quot;[39m
+          [33mvalue[39m=[32m&quot;multi@example.com&quot;[39m
+        [36m/&gt;[39m
+        [36m&lt;input[39m
+          [33mname[39m=[32m&quot;password&quot;[39m
+          [33mplaceholder[39m=[32m&quot;Password&quot;[39m
+          [33mtype[39m=[32m&quot;password&quot;[39m
+          [33mvalue[39m=[32m&quot;multipass&quot;[39m
+        [36m/&gt;[39m
+        [36m&lt;button[39m
+          [33mdata-testid[39m=[32m&quot;login-submit-button&quot;[39m
+          [33mtype[39m=[32m&quot;button&quot;[39m
+        [36m&gt;[39m
+          [0mLogin[0m
+        [36m&lt;/button&gt;[39m
+        [36m&lt;div[39m
+          [33mdata-testid[39m=[32m&quot;login-message&quot;[39m
+          [33mstyle[39m=[32m&quot;display: none;&quot;[39m
+        [36m&gt;[39m
+          [0mNo message[0m
+        [36m&lt;/div&gt;[39m
+      [36m&lt;/div&gt;[39m
+    [36m&lt;/div&gt;[39m
+  [36m&lt;/div&gt;[39m
+[36m&lt;/body&gt;[39m" type="TestingLibraryElementError">
+TestingLibraryElementError: Found multiple elements with the text: /login/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+&lt;button&gt;
+  Login
+&lt;/button&gt;
+
+Ignored nodes: comments, script, style
+&lt;h2&gt;
+  Login
+&lt;/h2&gt;
+
+Ignored nodes: comments, script, style
+&lt;button
+  data-testid=&quot;login-submit-button&quot;
+  type=&quot;button&quot;
+&gt;
+  Login
+&lt;/button&gt;
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;div&gt;
+      &lt;h1&gt;
+        Welcome to Anantam Home Interior Design Collaboration App
+      &lt;/h1&gt;
+      &lt;p&gt;
+        Your collaborative platform for home design.
+      &lt;/p&gt;
+      &lt;div
+        id=&quot;mount-check&quot;
+      &gt;
+        [App Mounted]
+      &lt;/div&gt;
+      &lt;nav&gt;
+        &lt;button&gt;
+          Register
+        &lt;/button&gt;
+        &lt;button&gt;
+          Login
+        &lt;/button&gt;
+      &lt;/nav&gt;
+      &lt;div&gt;
+        &lt;h2&gt;
+          Login
+        &lt;/h2&gt;
+        &lt;input
+          name=&quot;email&quot;
+          placeholder=&quot;Email&quot;
+          type=&quot;text&quot;
+          value=&quot;multi@example.com&quot;
+        /&gt;
+        &lt;input
+          name=&quot;password&quot;
+          placeholder=&quot;Password&quot;
+          type=&quot;password&quot;
+          value=&quot;multipass&quot;
+        /&gt;
+        &lt;button
+          data-testid=&quot;login-submit-button&quot;
+          type=&quot;button&quot;
+        &gt;
+          Login
+        &lt;/button&gt;
+        &lt;div
+          data-testid=&quot;login-message&quot;
+          style=&quot;display: none;&quot;
+        &gt;
+          No message
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/App.test.jsx:59:28
+            </failure>
+        </testcase>
+        <testcase classname="src/App.test.jsx" name="App &gt; renders the main heading" time="0.006">
+            <system-out>
+regMsg changed: 
+view changed: home
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/App.test.jsx" name="App &gt; can switch to register view and validate registration" time="0.008">
+            <system-out>
+regMsg changed: 
+view changed: home
+view changed: register
+Register button clicked!
+handleRegister called {
+  regEmail: [32m&apos;not-an-email&apos;[39m,
+  regPassword: [32m&apos;pass1234&apos;[39m,
+  regFullName: [32m&apos;Test User&apos;[39m
+}
+Setting message: Invalid email
+regMsg changed: Invalid email
+Register button clicked!
+handleRegister called {
+  regEmail: [32m&apos;test@example.com&apos;[39m,
+  regPassword: [32m&apos;&apos;[39m,
+  regFullName: [32m&apos;Test User&apos;[39m
+}
+Setting message: All fields required
+regMsg changed: All fields required
+Register button clicked!
+handleRegister called {
+  regEmail: [32m&apos;test@example.com&apos;[39m,
+  regPassword: [32m&apos;pass1234&apos;[39m,
+  regFullName: [32m&apos;Test User&apos;[39m
+}
+Setting message: Registration successful
+regMsg changed: Registration successful
+
+            </system-out>
+        </testcase>
+        <testcase classname="src/App.test.jsx" name="App &gt; can switch to login view and handle login logic" time="0.015">
+            <system-out>
+regMsg changed: 
+view changed: home
+view changed: register
+Register button clicked!
+handleRegister called {
+  regEmail: [32m&apos;test@example.com&apos;[39m,
+  regPassword: [32m&apos;pass1234&apos;[39m,
+  regFullName: [32m&apos;Test User&apos;[39m
+}
+Setting message: Registration successful
+regMsg changed: Registration successful
+view changed: login
+Login button clicked!
+Login button clicked!
+
+            </system-out>
+        </testcase>
+    </testsuite>
+</testsuites>

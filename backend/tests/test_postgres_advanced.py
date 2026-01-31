@@ -3,6 +3,7 @@ import pytest
 import psycopg2
 from sqlalchemy import create_engine, text, MetaData, Table, Column, Integer, String
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 DB_NAME = os.getenv("TEST_DB", "anantam_test")
 DB_USER = os.getenv("TEST_DB_USER", "anantam")
@@ -115,21 +116,31 @@ def test_unique_constraint(setup_table):
     with engine.connect() as conn:
         conn.execute(
             text(
-                f"ALTER TABLE {SCHEMA_NAME}.{TABLE_NAME} ADD CONSTRAINT unique_name UNIQUE (name);"
+                f"ALTER TABLE {SCHEMA_NAME}.{TABLE_NAME} \
+                    ADD CONSTRAINT unique_name UNIQUE (name);"
             )
         )
         # Insert a row
         conn.execute(
-            text(f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME} (name) VALUES ('Frank');")
+            text(
+                f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME} \
+                (name) VALUES ('Frank');"
+            )
         )
         # Try to insert duplicate
-        with pytest.raises(Exception):
+        with pytest.raises(IntegrityError):
             conn.execute(
-                text(f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME} (name) VALUES ('Frank');")
+                text(
+                    f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME}\
+                    (name) VALUES ('Frank');"
+                )
             )
         # Cleanup constraint
         conn.execute(
-            text(f"ALTER TABLE {SCHEMA_NAME}.{TABLE_NAME} DROP CONSTRAINT unique_name;")
+            text(
+                f"ALTER TABLE {SCHEMA_NAME}.{TABLE_NAME} \
+                DROP CONSTRAINT unique_name;"
+            )
         )
 
 
@@ -138,16 +149,25 @@ def test_data_types_and_casting(setup_table):
     with engine.connect() as conn:
         # Insert integer as string, should cast
         conn.execute(
-            text(f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME} (name) VALUES (:val);"),
+            text(
+                f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME} \
+                (name) VALUES (:val);"
+            ),
             {"val": str(123)},
         )
         result = conn.execute(
-            text(f"SELECT name FROM {SCHEMA_NAME}.{TABLE_NAME} WHERE name = '123';")
+            text(
+                f"SELECT name FROM {SCHEMA_NAME}.{TABLE_NAME} \
+                WHERE name = '123';"
+            )
         )
         assert result.fetchone()[0] == "123"
         # Cleanup
         conn.execute(
-            text(f"DELETE FROM {SCHEMA_NAME}.{TABLE_NAME} WHERE name = '123';")
+            text(
+                f"DELETE FROM {SCHEMA_NAME}.{TABLE_NAME} \
+                WHERE name = '123';"
+            )
         )
 
 
@@ -155,7 +175,10 @@ def test_error_handling(setup_table):
     engine = create_engine(DATABASE_URL)
     with engine.connect() as conn:
         # Try to insert null into NOT NULL column
-        with pytest.raises(Exception):
+        with pytest.raises(IntegrityError):
             conn.execute(
-                text(f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME} (name) VALUES (NULL);")
+                text(
+                    f"INSERT INTO {SCHEMA_NAME}.{TABLE_NAME} \
+                    (name) VALUES (NULL);"
+                )
             )
