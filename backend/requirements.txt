@@ -20,7 +20,7 @@ python-dotenv
 
 # Auth & Security
 passlib[bcrypt]
-bcrypt==4.1.2
+bcrypt==5.0.0
 python-jose[cryptography]
 python-multipart
 
