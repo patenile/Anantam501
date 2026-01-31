@@ -34,14 +34,14 @@ def postgres_test_cmd(test_file):
         "-e",
         (
             "TEST_DATABASE_URL="
-            "postgresql://anantam:supersecret@db:5432/anantam_test"
-            # pragma: allowlist secret
+            "postgresql://anantam:"
+            "supersecret@db:5432/anantam_test"  # pragma: allowlist secret
         ),
         "-e",
         (
             "DATABASE_URL="
-            "postgresql://anantam:supersecret@db:5432/anantam_test"
-            # pragma: allowlist secret
+            "postgresql://anantam:"
+            "supersecret@db:5432/anantam_test"  # pragma: allowlist secret
         ),
         "backend",
         "pytest",

@@ -3,7 +3,7 @@
     <testsuite name="src/App.test.jsx" timestamp="2026-01-30T16:15:51.981Z" hostname="Nileshs-MacBook-Air.local" tests="7" failures="2" errors="0" skipped="0" time="0.222">
         <testcase classname="src/App.test.jsx" name="handles navigation edge cases and state reset" time="0.119">
             <system-out>
-regMsg changed: 
+regMsg changed:
 view changed: home
 view changed: register
 view changed: login
@@ -13,7 +13,7 @@ view changed: register
         </testcase>
         <testcase classname="src/App.test.jsx" name="trims whitespace in registration and login" time="0.041">
             <system-out>
-regMsg changed: 
+regMsg changed:
 view changed: home
 view changed: register
 Register button clicked!
@@ -239,7 +239,7 @@ Ignored nodes: comments, script, style
         </testcase>
         <testcase classname="src/App.test.jsx" name="handles rapid view switching without breaking state" time="0.02">
             <system-out>
-regMsg changed: 
+regMsg changed:
 view changed: home
 view changed: register
 view changed: login
@@ -257,7 +257,7 @@ view changed: register
         </testcase>
         <testcase classname="src/App.test.jsx" name="persists registration state across multiple logins" time="0.01">
             <system-out>
-regMsg changed: 
+regMsg changed:
 view changed: home
 view changed: register
 Register button clicked!
@@ -440,14 +440,14 @@ Ignored nodes: comments, script, style
         </testcase>
         <testcase classname="src/App.test.jsx" name="App &gt; renders the main heading" time="0.006">
             <system-out>
-regMsg changed: 
+regMsg changed:
 view changed: home
 
             </system-out>
         </testcase>
         <testcase classname="src/App.test.jsx" name="App &gt; can switch to register view and validate registration" time="0.008">
             <system-out>
-regMsg changed: 
+regMsg changed:
 view changed: home
 view changed: register
 Register button clicked!
@@ -479,7 +479,7 @@ regMsg changed: Registration successful
         </testcase>
         <testcase classname="src/App.test.jsx" name="App &gt; can switch to login view and handle login logic" time="0.015">
             <system-out>
-regMsg changed: 
+regMsg changed:
 view changed: home
 view changed: register
 Register button clicked!

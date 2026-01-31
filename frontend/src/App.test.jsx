@@ -34,7 +34,7 @@ it("trims whitespace in registration and login", () => {
   });
   fireEvent.click(screen.getByTestId("register-submit-button"));
   expect(screen.getByTestId("registration-message")).toHaveTextContent(
-    /registration successful/i
+    /registration successful/i,
   );
 
   // Now login with trimmed values
@@ -47,7 +47,7 @@ it("trims whitespace in registration and login", () => {
   });
   fireEvent.click(screen.getByTestId("login-submit-button"));
   expect(
-    screen.getByRole("heading", { name: /welcome, spaced user/i })
+    screen.getByRole("heading", { name: /welcome, spaced user/i }),
   ).toBeInTheDocument();
 });
 
@@ -60,7 +60,7 @@ it("handles rapid view switching without breaking state", () => {
   expect(screen.getByRole("heading", { name: /login/i })).toBeInTheDocument();
   fireEvent.click(screen.getByText(/register/i));
   expect(
-    screen.getByRole("heading", { name: /register/i })
+    screen.getByRole("heading", { name: /register/i }),
   ).toBeInTheDocument();
 });
 
@@ -86,7 +86,7 @@ it("persists registration state across multiple logins", () => {
   });
   fireEvent.click(screen.getByTestId("login-submit-button"));
   expect(
-    screen.getByRole("heading", { name: /welcome, multi user/i })
+    screen.getByRole("heading", { name: /welcome, multi user/i }),
   ).toBeInTheDocument();
   // Logout and login again
   fireEvent.click(screen.getByText(/logout/i));
@@ -99,7 +99,7 @@ it("persists registration state across multiple logins", () => {
   });
   fireEvent.click(screen.getByTestId("login-submit-button"));
   expect(
-    screen.getByRole("heading", { name: /welcome, multi user/i })
+    screen.getByRole("heading", { name: /welcome, multi user/i }),
   ).toBeInTheDocument();
 });
 
@@ -113,7 +113,7 @@ describe("App", () => {
   it("renders the main heading", () => {
     render(<App />);
     expect(
-      screen.getByRole("heading", { name: /welcome to anantam/i })
+      screen.getByRole("heading", { name: /welcome to anantam/i }),
     ).toBeInTheDocument();
   });
 
@@ -121,7 +121,7 @@ describe("App", () => {
     render(<App />);
     fireEvent.click(screen.getByText(/register/i));
     expect(
-      screen.getByRole("heading", { name: /register/i })
+      screen.getByRole("heading", { name: /register/i }),
     ).toBeInTheDocument();
 
     // Try invalid email
@@ -136,7 +136,7 @@ describe("App", () => {
     });
     fireEvent.click(screen.getByTestId("register-submit-button"));
     expect(screen.getByTestId("registration-message")).toHaveTextContent(
-      /invalid email/i
+      /invalid email/i,
     );
 
     // Try missing fields
@@ -148,7 +148,7 @@ describe("App", () => {
     });
     fireEvent.click(screen.getByTestId("register-submit-button"));
     expect(screen.getByTestId("registration-message")).toHaveTextContent(
-      /all fields required/i
+      /all fields required/i,
     );
 
     // Valid registration
@@ -163,7 +163,7 @@ describe("App", () => {
     });
     fireEvent.click(screen.getByTestId("register-submit-button"));
     expect(screen.getByTestId("registration-message")).toHaveTextContent(
-      /registration successful/i
+      /registration successful/i,
     );
   });
 
@@ -195,7 +195,7 @@ describe("App", () => {
     });
     fireEvent.click(screen.getByTestId("login-submit-button"));
     expect(screen.getByTestId("login-message")).toHaveTextContent(
-      /invalid credentials/i
+      /invalid credentials/i,
     );
 
     // Correct credentials
@@ -207,12 +207,12 @@ describe("App", () => {
     });
     fireEvent.click(screen.getByTestId("login-submit-button"));
     expect(
-      screen.getByRole("heading", { name: /welcome, test user/i })
+      screen.getByRole("heading", { name: /welcome, test user/i }),
     ).toBeInTheDocument();
     // Logout
     fireEvent.click(screen.getByText(/logout/i));
     expect(
-      screen.getByRole("heading", { name: /welcome to anantam/i })
+      screen.getByRole("heading", { name: /welcome to anantam/i }),
     ).toBeInTheDocument();
   });
 });

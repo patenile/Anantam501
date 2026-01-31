@@ -240,7 +240,6 @@ This document details the current and planned test coverage for the Anantam appl
 ### Planned Test Scenarios
 
 - **Basic API Flows:**
-
   - CRUD for all main resources (users, projects, designs, comments, etc.)
   - Authenticated and unauthenticated access (ensure proper 401/403 handling)
   - Input validation: required fields, type checks, length, format
