@@ -14,21 +14,31 @@ from collections import defaultdict
 REPORTS_DIR = "reports"
 HISTORY_DEPTH = 3  # Number of recent runs to check
 
+
 # Find all JUnit XML files in reports/
 def find_junit_reports():
     return sorted(glob.glob(os.path.join(REPORTS_DIR, "*-junit.xml")))
+
 
 def parse_failures(xml_path):
     failures = set()
     try:
         tree = ET.parse(xml_path)
         for testcase in tree.findall(".//testcase"):
-            if testcase.find("failure") is not None or testcase.find("error") is not None:
-                name = testcase.attrib.get("classname", "") + "." + testcase.attrib.get("name", "")
+            if (
+                testcase.find("failure") is not None
+                or testcase.find("error") is not None
+            ):
+                name = (
+                    testcase.attrib.get("classname", "")
+                    + "."
+                    + testcase.attrib.get("name", "")
+                )
                 failures.add(name)
     except Exception as e:
         print(f"[WARN] Could not parse {xml_path}: {e}")
     return failures
+
 
 def main():
     all_reports = find_junit_reports()
@@ -50,6 +60,7 @@ def main():
     else:
         print("[INFO] No flaky tests detected in recent runs.")
         sys.exit(0)
+
 
 if __name__ == "__main__":
     main()

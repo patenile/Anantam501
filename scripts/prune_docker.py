@@ -17,9 +17,12 @@ Requires Docker CLI to be installed and available in PATH.
 import subprocess
 import sys
 
+
 def run(cmd):
     try:
-        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+        result = subprocess.run(
+            cmd, shell=True, check=True, capture_output=True, text=True
+        )
         print(result.stdout)
         return result.returncode
     except subprocess.CalledProcessError as e:
@@ -27,12 +30,14 @@ def run(cmd):
         print(e.stderr, file=sys.stderr)
         return e.returncode
 
+
 def main():
     print("\033[1;34m[INFO]\033[0m Pruning unused Docker volumes...")
     run("docker volume prune -f")
     print("\033[1;34m[INFO]\033[0m Pruning unused Docker networks...")
     run("docker network prune -f")
     print("\033[1;32m[SUCCESS]\033[0m Docker maintenance complete.")
+
 
 if __name__ == "__main__":
     main()

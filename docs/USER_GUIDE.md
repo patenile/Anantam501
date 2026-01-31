@@ -26,7 +26,6 @@ Keep .env.test for test-only secrets and .env for your main app/dev environment.
 The project uses two separate Docker Compose files to keep development and test environments isolated:
 
 - **docker-compose.yml** (in infra/):
-
   - Use this for normal development, design, and running the main application stack.
   - Reads environment variables from your .env file (not committed to version control).
   - Safe for local development and design work.

@@ -1,5 +1,4 @@
-
-version: '3.9'
+version: "3.9"
 services:
   backend:
     build:
@@ -25,7 +24,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
+          cpus: "0.50"
           memory: 512M
     restart: unless-stopped
     logging:
@@ -55,7 +54,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
+          cpus: "0.50"
           memory: 512M
     restart: unless-stopped
     logging:
@@ -89,7 +88,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.50'
+          cpus: "0.50"
           memory: 512M
     restart: unless-stopped
     logging:
@@ -112,7 +111,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: "0.25"
           memory: 256M
     restart: unless-stopped
     logging:

@@ -1,11 +1,11 @@
 name: CI/CD Pipeline
 on:
   push:
-    branches: [ main, design ]
+    branches: [main, design]
   pull_request:
-    branches: [ main, design ]
+    branches: [main, design]
   schedule:
-    - cron: '0 3 * * 1' # Every Monday at 03:00 UTC
+    - cron: "0 3 * * 1" # Every Monday at 03:00 UTC
 jobs:
   security-scan:
     runs-on: ubuntu-latest
@@ -54,13 +54,13 @@ jobs:
                 --health-timeout 5s
                 --health-retries 5
           env:
-            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db  # pragma: allowlist secret
+            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db # pragma: allowlist secret
           steps:
             - name: Checkout code
               uses: actions/checkout@v4
-                  ./backend/.venv/bin/python scripts/test_with_services.py --ci --no-teardown --no-frontend --no-e2e
+                ./backend/.venv/bin/python scripts/test_with_services.py --ci --no-teardown --no-frontend --no-e2e
                 else
-                  ./backend/.venv/bin/python scripts/test_with_services.py --ci
+                ./backend/.venv/bin/python scripts/test_with_services.py --ci
                 fi
             - name: Upload all test reports
               uses: actions/upload-artifact@v4
@@ -82,7 +82,7 @@ jobs:
               with:
                 status: custom
                 fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
-                text: ':warning: Flaky tests detected in recent runs! Please review the test reports.'
+                text: ":warning: Flaky tests detected in recent runs! Please review the test reports."
               env:
                 SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
             - name: Notify on Slack (test-all)
@@ -160,12 +160,12 @@ jobs:
       - name: Docker image scan (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'anantam-backend:latest'
+          image-ref: "anantam-backend:latest"
         continue-on-error: true
       - name: Docker image scan (Trivy frontend)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'anantam-frontend:latest'
+          image-ref: "anantam-frontend:latest"
         continue-on-error: true
 
   test-backend:
@@ -176,7 +176,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres  # pragma: allowlist secret
+          POSTGRES_PASSWORD: postgres # pragma: allowlist secret
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
@@ -186,14 +186,14 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db  # pragma: allowlist secret
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db # pragma: allowlist secret
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Install backend dependencies
         run: |
           cd backend
@@ -230,7 +230,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
       - name: Install frontend dependencies
         run: |
           cd frontend
@@ -252,7 +252,7 @@ jobs:
           name: frontend-coverage-report
           path: frontend/coverage
           if-no-files-found: ignore
-# Scheduled security scan (runs weekly)
+  # Scheduled security scan (runs weekly)
   scheduled-security-scan:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule'
@@ -275,12 +275,12 @@ jobs:
       - name: Docker image scan (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'anantam-backend:latest'
+          image-ref: "anantam-backend:latest"
         continue-on-error: true
       - name: Docker image scan (Trivy frontend)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'anantam-frontend:latest'
+          image-ref: "anantam-frontend:latest"
         continue-on-error: true
 
   test-e2e:
@@ -292,7 +292,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
       - name: Install e2e dependencies
         run: |
           cd e2e
