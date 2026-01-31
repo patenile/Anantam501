@@ -1,16 +1,15 @@
-import os
-import sys
+
+
+
+
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 
-from database import Base  # noqa
-from models import *  # noqa
-from database import DATABASE_URL
 
-# Add parent directory to sys.path for imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from database import Base, get_test_database_url  # noqa
+from models import *  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,7 +23,7 @@ target_metadata = Base.metadata
 
 
 def run_migrations_offline():
-    url = DATABASE_URL
+    url = get_test_database_url()
     context.configure(
         url=url, target_metadata=target_metadata, literal_binds=True, compare_type=True
     )
@@ -37,7 +36,7 @@ def run_migrations_online():
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
-        url=DATABASE_URL,
+        url=get_test_database_url(),
     )
     with connectable.connect() as connection:
         context.configure(
