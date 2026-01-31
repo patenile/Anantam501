@@ -7,6 +7,7 @@
 - **Production Readiness**: These enhancements make the stack more robust, easier to monitor, and safer for scaling or future cloud migration.
 
 These improvements ensure your application is resilient, secure, and ready for advanced development and deployment scenarios.
+
 ## 5. System Dark/Light Mode Compatibility
 
 - **Requirement**: The application frontend must fully support system dark and light mode preferences, adapting its appearance automatically based on the user's OS or browser settings.
@@ -17,6 +18,7 @@ These improvements ensure your application is resilient, secure, and ready for a
   - Test across major browsers and operating systems for consistent appearance.
 
 This ensures a modern, accessible, and user-friendly experience for all users.
+
 ## 4. Version Control, Commit Checks, and Post-Process Automation
 
 - **Version Control**: All code must be managed in a Git repository with a clear branching strategy (e.g., main, develop, feature branches).
@@ -31,6 +33,7 @@ This ensures a modern, accessible, and user-friendly experience for all users.
 - **Database Backups & Monitoring**: Schedule regular database backups and health monitoring as part of post-deployment processes.
 
 This ensures code quality, security, and operational reliability throughout the development lifecycle.
+
 # Development Flow Document
 
 ## 1. Professional Task List for Application Development
@@ -38,8 +41,10 @@ This ensures code quality, security, and operational reliability throughout the 
 1. Scaffold project directory structure
 2. Install and validate all required tools and dependencies (Python 3.12, Node.js, Docker, Docker Compose, etc.)
 3. Set up Docker Compose (plugin) for backend, frontend, and database
-  - Use `docker compose` (not legacy `docker-compose`).
-  - For live-reload during development, use `docker compose watch` with compose.watch.yml.
+
+- Use `docker compose` (not legacy `docker-compose`).
+- For live-reload during development, use `docker compose watch` with compose.watch.yml.
+
 4. Validate Docker, backend, frontend, and database setup (ensure all services are running and accessible)
 5. Initialize Python backend with FastAPI and .venv
 6. Initialize React frontend with Vite or Next.js
@@ -89,6 +94,7 @@ This ensures code quality, security, and operational reliability throughout the 
 - **Configuration**: All Docker and service configuration is centralized in `docker-compose.yml` and the main `.env` file, with no hardcoded values.
 
 **Benefits of Nginx Reverse Proxy:**
+
 - Centralizes routing and access control for all web traffic
 - Improves security by hiding internal service ports
 - Simplifies user access (single public port)
@@ -96,6 +102,7 @@ This ensures code quality, security, and operational reliability throughout the 
 - Provides a foundation for advanced features (rate limiting, caching, etc.)
 
 This strategy ensures a robust, reproducible, and cross-platform development and deployment environment, with clear separation of services, automated orchestration, and centralized configuration.
+
 - Only one `.env` file will be user-facing; all other environment files will be generated as needed to maintain a single source of truth for configuration and credentials.
 
 This approach ensures a robust, maintainable, and professional development workflow, with clear separation of concerns, maximum isolation, and centralized management of configuration and diagnostics.

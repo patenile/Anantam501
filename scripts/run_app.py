@@ -1,7 +1,24 @@
+import os
+import sys
+import subprocess
+import argparse
+
+
+import json
+import shutil
+import re
+import time
+import platform
+import urllib.request
+import glob
+
+
 def validate_npm_dependencies():
-    print("[VALIDATE] Checking npm dependencies in frontend, backend, and e2e ...")
+    print(
+        "[VALIDATE] Checking npm dependencies in frontend,\
+          backend, and e2e ..."
+    )
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    import json
 
     for subdir in ["frontend", "backend", "e2e"]:
         pkg_dir = os.path.join(base_dir, subdir)
@@ -15,26 +32,33 @@ def validate_npm_dependencies():
                         data.get("devDependencies")
                     )
                 except Exception as e:
-                    print(f"[ERROR] Could not parse package.json in {subdir}: {e}")
+                    print(
+                        f"[ERROR] Could not parse package.json\
+                        in {subdir}: {e}"
+                    )
                     has_deps = False
             if has_deps:
                 if not os.path.exists(node_modules):
                     print(
-                        f"[ERROR] node_modules missing in {subdir}. Run 'npm install' in {subdir}."
+                        f"[ERROR] node_modules missing in {subdir}. "
+                        f"Run 'npm install' in {subdir}."
                     )
                 else:
                     print(f"[OK] node_modules present in {subdir}.")
             else:
-                print(f"[OK] No dependencies in {subdir}, node_modules not required.")
+                print(
+                    f"[OK] No dependencies in {subdir},\
+                    node_modules not required."
+                )
         else:
             print(f"[SKIP] No package.json in {subdir}.")
 
 
 def validate_npm_precommit_scripts():
     print(
-        "[VALIDATE] Checking for pre-commit scripts in frontend, backend, and e2e ..."
+        "[VALIDATE] Checking for pre-commit scripts in \
+            frontend, backend, and e2e ..."
     )
-    import json
 
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     for subdir in ["frontend", "backend", "e2e"]:
@@ -48,18 +72,24 @@ def validate_npm_precommit_scripts():
                     if "pre-commit" in scripts:
                         print(f"[OK] pre-commit script found in {subdir}.")
                     else:
-                        print(f"[ERROR] pre-commit script missing in {subdir}.")
+                        print(
+                            f"[ERROR] pre-commit script missing \
+                            in {subdir}."
+                        )
                 except Exception as e:
-                    print(f"[ERROR] Could not parse package.json in {subdir}: {e}")
+                    print(
+                        f"[ERROR] Could not parse package.json\
+                        in {subdir}: {e}"
+                    )
         else:
             print(f"[SKIP] No package.json in {subdir}.")
 
 
 def validate_processes():
     print(
-        "[VALIDATE] Checking for required processes (docker, docker compose, node, npm, python3.12) ..."
+        "[VALIDATE] Checking for required processes\
+            (docker, docker compose, node, npm, python3.12) ..."
     )
-    import shutil
 
     required = ["docker", "docker-compose", "node", "npm", "python3.12"]
     for proc in required:
@@ -70,7 +100,10 @@ def validate_processes():
 
 
 def setup_npm_dependencies():
-    print("\n[STEP 1.5] Installing npm dependencies for frontend, backend, and e2e ...")
+    print(
+        "\n[STEP 1.5] Installing npm dependencies for \
+        frontend, backend, and e2e ..."
+    )
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     for subdir in ["frontend", "backend", "e2e"]:
         pkg_dir = os.path.join(base_dir, subdir)
@@ -81,18 +114,19 @@ def setup_npm_dependencies():
             if result.returncode == 0:
                 print(f"[OK] npm dependencies installed in {subdir}.")
             else:
-                print(f"[ERROR] npm install failed in {subdir}. Please check the logs.")
+                print(
+                    f"[ERROR] npm install failed \
+                    in {subdir}. Please check the logs."
+                )
         else:
-            print(f"[SKIP] No package.json found in {subdir}, skipping npm install.")
-
-
-import argparse
+            print(
+                f"[SKIP] No package.json found \
+                in {subdir}, skipping npm install."
+            )
 
 
 def cleanup_orphans():
     # Remove orphaned containers not managed by current compose file
-    import subprocess
-
     print("[STEP] Cleaning up orphaned containers...")
     result = subprocess.run(
         [
@@ -129,13 +163,13 @@ def build_images():
 
 def check_env_file_and_vars():
     print("[STEP 3] Checking .env file and required variables...")
-    import re
 
     env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".env"))
     required_vars = ["POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_DB"]
     if not os.path.exists(env_path):
         print(
-            f"[FATAL] .env file not found at {env_path}. Please create it with required variables."
+            f"[FATAL] .env file not found at {env_path}. "
+            "Please create it with required variables."
         )
         sys.exit(1)
     with open(env_path) as f:
@@ -146,7 +180,9 @@ def check_env_file_and_vars():
             missing.append(var)
     if missing:
         print(
-            f"[FATAL] The following required variables are missing in .env: {', '.join(missing)}"
+            f"[FATAL] The following required variables are \
+                missing in .env: "
+            f"{', '.join(missing)}"
         )
         sys.exit(1)
     print("[OK] .env file and required variables are present.")
@@ -154,7 +190,6 @@ def check_env_file_and_vars():
 
 def test_docker_compose_stack():
     print("[STEP 4] Testing Docker Compose stack startup...")
-    import time
 
     infra_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "infra"))
     # Copy .env to infra if not present
@@ -169,14 +204,21 @@ def test_docker_compose_stack():
     result = subprocess.run(["docker", "compose", "up", "-d"], cwd=infra_dir)
     if result.returncode != 0:
         print(
-            "[FATAL] Failed to start Docker Compose stack. Check docker-compose.yml and .env."
+            "[FATAL] Failed to start Docker Compose stack. "
+            "Check docker-compose.yml and .env."
         )
         sys.exit(1)
-    print("[OK] Docker Compose stack started. Waiting for services to initialize...")
+    print(
+        "[OK] Docker Compose stack started. Waiting for\
+        services to initialize..."
+    )
     time.sleep(5)
     # Check container health (basic)
     ps = subprocess.run(
-        ["docker", "compose", "ps"], cwd=infra_dir, capture_output=True, text=True
+        ["docker", "compose", "ps"],
+        cwd=infra_dir,
+        capture_output=True,
+        text=True,
     )
     print(ps.stdout)
     # Stop stack after test
@@ -186,7 +228,6 @@ def test_docker_compose_stack():
 
 def ensure_homebrew_path_in_shell():
     print("[STEP 0.1] Ensuring Homebrew bin directory is in your PATH...")
-    import platform
 
     home = os.path.expanduser("~")
     shell_rc = os.path.join(home, ".zshrc")
@@ -197,14 +238,20 @@ def ensure_homebrew_path_in_shell():
     current_path = os.environ.get("PATH", "")
     if brew_bin not in current_path:
         print(
-            f"[INFO] {brew_bin} not found in PATH. Attempting to add to {shell_rc} ..."
+            f"[INFO] {brew_bin} not found in PATH. "
+            f"Attempting to add to {shell_rc} ..."
         )
-        export_line = f'\n# Added by Anantam setup script for Homebrew\nexport PATH="{brew_bin}:$PATH"\n'
+        export_line = (
+            f"\n# Added by Anantam setup script for Homebrew\n"
+            f'export PATH="{brew_bin}:$PATH"\n'
+        )
         try:
             with open(shell_rc, "a") as f:
                 f.write(export_line)
             print(
-                f"[OK] Added {brew_bin} to {shell_rc}. Please restart your terminal or run 'source {shell_rc}' to apply changes."
+                f"[OK] Added {brew_bin} to {shell_rc}. "
+                "Please restart your terminal or run 'source {shell_rc}' \
+                    to apply changes."
             )
         except Exception as e:
             print(f"[ERROR] Could not update {shell_rc}: {e}")
@@ -221,11 +268,9 @@ def check_and_install_docker_compose_plugin():
         print("[OK] Docker Compose plugin is already installed.")
         return
     print(
-        "[WARN] Docker Compose plugin not found or not working. Attempting to install the official plugin..."
+        "[WARN] Docker Compose plugin not found or not working. "
+        "Attempting to install the official plugin..."
     )
-    import platform
-    import json
-    import urllib.request
 
     arch = platform.machine()
     cli_plugins_dir = os.path.expanduser("~/.docker/cli-plugins")
@@ -237,20 +282,30 @@ def check_and_install_docker_compose_plugin():
             release_data = json.load(resp)
             tag_name = release_data["tag_name"]
     except Exception as e:
-        print(f"[FATAL] Could not fetch latest Docker Compose release info: {e}")
+        print(
+            f"[FATAL] Could not fetch latest Docker \
+            Compose release info: {e}"
+        )
         sys.exit(1)
     dest = os.path.join(cli_plugins_dir, "docker-compose")
     bin_names = []
     if arch == "arm64":
-        bin_names = ["docker-compose-darwin-aarch64", "docker-compose-darwin-arm64"]
+        bin_names = [
+            "docker-compose-darwin-aarch64",
+            "docker-compose-darwin-arm64",
+        ]
     else:
         bin_names = ["docker-compose-darwin-x86_64"]
     success = False
     for bin_name in bin_names:
         url = (
-            f"https://github.com/docker/compose/releases/download/{tag_name}/{bin_name}"
+            f"https://github.com/docker/compose/releases/download/{tag_name}/"
+            f"{bin_name}"
         )
-        print(f"[INFO] Attempting to download Docker Compose plugin from {url} ...")
+        print(
+            f"[INFO] Attempting to download Docker \
+            Compose plugin from {url} ..."
+        )
         try:
             urllib.request.urlretrieve(url, dest)
             os.chmod(dest, 0o755)
@@ -263,7 +318,11 @@ def check_and_install_docker_compose_plugin():
             print(f"[WARN] Failed to download {bin_name}: {e}")
     if not success:
         print(
-            f"[FATAL] Could not download a compatible Docker Compose plugin for your system. Please check the latest release assets at https://github.com/docker/compose/releases and install manually if needed."
+            "[FATAL] Could not download a compatible \
+                Docker Compose plugin for your system. "
+            "Please check the latest release assets \
+                at https://github.com/docker/compose/releases \
+                    and install manually if needed."
         )
         sys.exit(1)
     # Re-check if docker compose is now available
@@ -274,14 +333,12 @@ def check_and_install_docker_compose_plugin():
         print("[OK] Docker Compose plugin is now installed and working.")
         return
     print(
-        "[FATAL] Docker Compose plugin is still not available after plugin install. Please check your Docker installation and PATH."
+        "[FATAL] Docker Compose plugin is still not \
+            available after plugin install. "
+        "Please check your Docker installation and PATH."
     )
     sys.exit(1)
 
-
-import subprocess
-import sys
-import os
 
 SCRIPTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 VALIDATE_ENV_SCRIPT = os.path.join(SCRIPTS_DIR, "validate_environment.py")
@@ -309,7 +366,10 @@ def setup_python_venv():
     )
     venv_dir = os.path.join(backend_dir, ".venv")
     requirements = os.path.join(backend_dir, "requirements.txt")
-    print(f"\n[STEP 2] Setting up Python 3.12 virtual environment in {venv_dir} ...")
+    print(
+        f"\n[STEP 2] Setting up Python 3.12 virtual \
+        environment in {venv_dir} ..."
+    )
     if not os.path.exists(venv_dir):
         result = subprocess.run(["python3.12", "-m", "venv", venv_dir])
         if result.returncode != 0:
@@ -331,7 +391,8 @@ def setup_python_venv():
         print("[OK] All required Python packages are installed and valid.")
     else:
         print(
-            "[ERROR] Some Python packages are missing or incompatible. Please check requirements.txt."
+            "[ERROR] Some Python packages are missing or \
+                incompatible. Please check requirements.txt."
         )
         sys.exit(1)
 
@@ -341,15 +402,24 @@ def main():
     parser.add_argument(
         "--live",
         action="store_true",
-        help="Bring up the application stack and keep it running (docker compose up)",
+        help=(
+            "Bring up the application stack and keep it \
+                running "
+            "(docker compose up)"
+        ),
     )
     parser.add_argument(
         "--tests",
         action="store_true",
-        help="Run all backend test suites with stack up, then stop stack",
+        help=(
+            "Run all backend test suites with stack up, \
+            then stop stack"
+        ),
     )
     parser.add_argument(
-        "--build", action="store_true", help="Rebuild all Docker images with no cache"
+        "--build",
+        action="store_true",
+        help="Rebuild all Docker images with no cache",
     )
     parser.add_argument(
         "--cleanup",
@@ -386,7 +456,10 @@ def main():
 
     if args.tests:
         # Start stack (detached)
-        print("[STEP] Starting Docker Compose stack for test suites ...")
+        print(
+            "[STEP] Starting Docker Compose stack \
+            for test suites ..."
+        )
         infra_dir = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "..", "infra")
         )
@@ -400,14 +473,18 @@ def main():
         result = subprocess.run(["docker", "compose", "up", "-d"], cwd=infra_dir)
         if result.returncode != 0:
             print(
-                "[FATAL] Failed to start Docker Compose stack. Check docker-compose.yml and .env."
+                "[FATAL] Failed to start Docker Compose stack. \
+                    Check docker-compose.yml and .env."
             )
             sys.exit(1)
         import time
         import urllib.request
 
         # Wait for backend to be healthy by curling the endpoint
-        print("[STEP] Waiting for backend service to be healthy (curl check) ...")
+        print(
+            "[STEP] Waiting for backend service \
+            to be healthy (curl check) ..."
+        )
         healthy = False
         for _ in range(30):
             try:
@@ -428,9 +505,9 @@ def main():
 
         # Run Alembic migrations inside backend container
         print("[STEP] Running Alembic migrations in backend container ...")
-        print(f"[DEBUG] infra_dir: {infra_dir}")
-        print(f"[DEBUG] Current working directory: {os.getcwd()}")
-        print(f"[DEBUG] Environment: {os.environ}")
+        print("[DEBUG] infra_dir: {}".format(infra_dir))
+        print("[DEBUG] Current working directory: {}".format(os.getcwd()))
+        print("[DEBUG] Environment: {}".format(os.environ))
         # Use 'docker compose ps -q backend' to get the backend container ID
         try:
             ps = subprocess.run(
@@ -445,18 +522,26 @@ def main():
             backend_container_id = None
         if not backend_container_id:
             print(
-                "[FATAL] Could not determine backend container ID. Alembic migration cannot proceed."
+                "[FATAL] Could not determine backend container ID. \
+                    Alembic migration cannot proceed."
             )
             subprocess.run(["docker", "compose", "down"], cwd=infra_dir)
             sys.exit(1)
-        print(f"[DEBUG] Using backend container ID: {backend_container_id}")
+            print(
+                f"[DEBUG] Using backend container ID: \
+                {backend_container_id}"
+            )
         if backend_container_id:
-            # Debug: List /app and show alembic.ini contents before running Alembic
+            # Debug: List /app and show alembic.ini \
+            # contents before running Alembic
             print("[DEBUG] Listing /app directory in backend container:")
             subprocess.run(
                 ["docker", "compose", "exec", "-T", "backend", "sh", "-c", "ls -l /app"]
             )
-            print("[DEBUG] Showing contents of /app/alembic.ini in backend container:")
+            print(
+                "[DEBUG] Showing contents of /app/alembic.ini \
+                in backend container:"
+            )
             subprocess.run(
                 [
                     "docker",
@@ -469,7 +554,10 @@ def main():
                     "cat /app/alembic.ini",
                 ]
             )
-            print("[DEBUG] Checking Alembic availability in backend container:")
+            print(
+                "[DEBUG] Checking Alembic availability in \
+                backend container:"
+            )
             subprocess.run(
                 [
                     "docker",
@@ -496,7 +584,8 @@ def main():
             ini_result = subprocess.run(check_ini_cmd, capture_output=True, text=True)
             if ini_result.returncode != 0:
                 print(
-                    "[FATAL] /app/alembic.ini not found in backend container. Alembic migration cannot proceed."
+                    "[FATAL] /app/alembic.ini not found in backend container. "
+                    "Alembic migration cannot proceed."
                 )
                 print(ini_result.stdout)
                 print(ini_result.stderr)
@@ -520,7 +609,10 @@ def main():
                 subprocess.run(["docker", "compose", "down"], cwd=infra_dir)
                 sys.exit(1)
         else:
-            print("[FATAL] Could not find backend container to run Alembic migrations.")
+            print(
+                "[FATAL] Could not find backend container to \
+                run Alembic migrations."
+            )
             subprocess.run(["docker", "compose", "down"], cwd=infra_dir)
             sys.exit(1)
 
@@ -533,7 +625,6 @@ def main():
         tests_dir = os.path.abspath(
             os.path.join(os.path.dirname(__file__), "..", "tests")
         )
-        import glob
 
         test_files = sorted(glob.glob(os.path.join(tests_dir, "test_*.py")))
         all_passed = True
@@ -544,7 +635,8 @@ def main():
                 print(f"[OK] {os.path.basename(test_script)} passed.")
             else:
                 print(
-                    f"[FAIL] {os.path.basename(test_script)} failed. See output above."
+                    f"[FAIL] {os.path.basename(test_script)} failed. \
+                        See output above."
                 )
                 all_passed = False
         # Stop stack after tests
@@ -562,7 +654,8 @@ def main():
     run_env_validation()
     # Setup Python venv and install requirements
     setup_python_venv()
-    # Re-run environment validation using backend venv Python to check for missing packages after install
+    # Re-run environment validation using backend venv \
+    # Python to check for missing packages after install
     run_env_validation(use_venv_python=True)
     check_env_file_and_vars()
 
@@ -579,7 +672,8 @@ def main():
     result = subprocess.run(["docker", "compose", "up", "-d"], cwd=infra_dir)
     if result.returncode != 0:
         print(
-            "[FATAL] Failed to start Docker Compose stack. Check docker-compose.yml and .env."
+            "[FATAL] Failed to start Docker Compose stack. \
+                Check docker-compose.yml and .env."
         )
         sys.exit(1)
     import time
@@ -594,8 +688,6 @@ def main():
             capture_output=True,
             text=True,
         )
-        import json
-
         try:
             services = json.loads(ps.stdout)
             for svc in services:
@@ -629,7 +721,8 @@ def main():
             print("[OK] Authentication endpoints passed automated tests.")
         else:
             print(
-                "[FAIL] Authentication endpoints failed automated tests. See output above."
+                "[FAIL] Authentication endpoints failed \
+                    automated tests. See output above."
             )
     else:
         print(f"[WARN] Test script not found: {test_script}")
@@ -639,7 +732,9 @@ def main():
     subprocess.run(["docker", "compose", "down"], cwd=infra_dir)
 
     print(
-        "[INFO] All initial checks, stack test, and automated tests complete. Use --live to keep the app running."
+        "[INFO] All initial checks, stack test, \
+            and automated tests complete. \
+                Use --live to keep the app running."
     )
 
 

@@ -1,99 +1,12 @@
-# This workflow runs backend, frontend, and E2E tests, builds Docker images, lints code, deploys, and sends notifications.
 name: CI/CD Pipeline
-
 on:
   push:
     branches: [ main, design ]
   pull_request:
     branches: [ main, design ]
-
   schedule:
     - cron: '0 3 * * 1' # Every Monday at 03:00 UTC
-
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.10, 3.11]
-        node-version: [18, 20]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json', '**/package.json') }}
-      - name: Install backend dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm ci
-      - name: Install e2e dependencies
-        run: |
-          cd e2e
-          npm ci
-
-  lint:
-    runs-on: ubuntu-latest
-    needs: setup
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Lint backend (flake8)
-        run: |
-          cd backend
-          pip install flake8
-          flake8 .
-      - name: Lint frontend (eslint)
-        run: |
-          cd frontend
-          npm install eslint
-          npx eslint src --ext .js,.jsx
-      - name: Lint e2e (eslint)
-        run: |
-          cd e2e
-          npm install eslint
-          npx eslint tests --ext .js,.ts
-      - name: Auto-format backend (black)
-        run: |
-          cd backend
-          pip install black
-          black --check .
-      - name: Auto-format frontend (prettier)
-        run: |
-          cd frontend
-          npm install prettier
-          npx prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"
-      - name: Auto-format e2e (prettier)
-        run: |
-          cd e2e
-          npm install prettier
-          npx prettier --check "tests/**/*.{js,ts,json,md}"
-# Secret Management Best Practices:
-# - Store all sensitive values (tokens, passwords, API keys) in GitHub Secrets, never in code or workflow files.
-# - Use descriptive secret names (e.g., DOCKERHUB_USERNAME, DOCKERHUB_TOKEN, SLACK_WEBHOOK_URL).
-# - Rotate secrets regularly and remove unused ones.
-# - Limit secret access to only required workflows and environments.
-# - Use environment protection rules for production secrets.
-
   security-scan:
     runs-on: ubuntu-latest
     needs: setup
@@ -109,10 +22,141 @@ jobs:
         run: |
           cd frontend
           npm audit --audit-level=moderate || true
-      - name: Node.js dependency scan (npm audit e2e)
-        run: |
-          cd e2e
-          npm audit --audit-level=moderate || true
+                cd frontend
+                npm audit --audit-level=moderate || true
+            - name: Node.js dependency scan (npm audit e2e)
+              run: |
+                cd e2e
+                npm audit --audit-level=moderate || true
+            - name: Docker image scan (Trivy)
+              uses: aquasecurity/trivy-action@master
+              with:
+                image-ref: 'anantam-backend:latest'
+              continue-on-error: true
+            - name: Docker image scan (Trivy frontend)
+              uses: aquasecurity/trivy-action@master
+              with:
+                image-ref: 'anantam-frontend:latest'
+              continue-on-error: true
+        test-backend:
+          runs-on: ubuntu-latest
+          needs: setup
+          services:
+            postgres:
+              image: postgres:15
+              env:
+                POSTGRES_DB: test_db
+              ports:
+                - 5432:5432
+              options: >
+                --health-cmd pg_isready
+                --health-interval 10s
+                --health-timeout 5s
+                --health-retries 5
+          env:
+            DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db  # pragma: allowlist secret
+          steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+                  ./backend/.venv/bin/python scripts/test_with_services.py --ci --no-teardown --no-frontend --no-e2e
+                else
+                  ./backend/.venv/bin/python scripts/test_with_services.py --ci
+                fi
+            - name: Upload all test reports
+              uses: actions/upload-artifact@v4
+              with:
+                name: all-test-reports
+                path: reports/
+                if-no-files-found: ignore
+            - name: Summarize test results
+              run: |
+                echo "::notice file=reports/backend-junit.xml::Backend JUnit XML"
+                echo "::notice file=reports/frontend-junit.xml::Frontend JUnit XML"
+                echo "::notice file=reports/e2e-junit.xml::E2E JUnit XML"
+            - name: Check for flaky tests
+              run: |
+                python3 scripts/check_flaky_tests.py || echo "FLAKY_TESTS_DETECTED=1" >> $GITHUB_ENV
+            - name: Notify on Slack (flaky tests)
+              if: env.FLAKY_TESTS_DETECTED == '1'
+              uses: 8398a7/action-slack@v3
+              with:
+                status: custom
+                fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+                text: ':warning: Flaky tests detected in recent runs! Please review the test reports.'
+              env:
+                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            - name: Notify on Slack (test-all)
+              if: always()
+              uses: 8398a7/action-slack@v3
+              with:
+                status: ${{ job.status }}
+                fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+              env:
+                SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+                python-version: ${{ matrix.python-version }}
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: ${{ matrix.node-version }}
+            - name: Cache pip
+              uses: actions/cache@v4
+              with:
+                path: ~/.cache/pip
+                key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+            - name: Cache npm
+              uses: actions/cache@v4
+              with:
+                path: ~/.npm
+                key: ${{ runner.os }}-npm-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json', '**/package.json') }}
+            - name: Install backend dependencies
+              run: |
+                cd backend
+                pip install -r requirements.txt
+            - name: Install frontend dependencies
+              run: |
+                cd frontend
+                npm ci
+            - name: Install e2e dependencies
+              run: |
+                cd e2e
+                npm ci
+
+        lint:
+          runs-on: ubuntu-latest
+          needs: setup
+          steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+            - name: Lint backend (flake8)
+              run: |
+                cd backend
+                pip install flake8
+                flake8 .
+            - name: Lint frontend (eslint)
+              run: |
+                cd frontend
+                npm install eslint
+                npx eslint src --ext .js,.jsx
+            - name: Lint e2e (eslint)
+              run: |
+                cd e2e
+                npm install eslint
+                npx eslint tests --ext .js,.ts
+            - name: Auto-format backend (black)
+              run: |
+                cd backend
+                pip install black
+                black --check .
+            - name: Auto-format frontend (prettier)
+              run: |
+                cd frontend
+                npm install prettier
+                npx prettier --check "src/**/*.{js,jsx,ts,tsx,json,css,md}"
+            - name: Auto-format e2e (prettier)
+              run: |
+                cd e2e
+                npm install prettier
+                npx prettier --check "tests/**/*.{js,ts,json,md}"
       - name: Docker image scan (Trivy)
         uses: aquasecurity/trivy-action@master
         with:
@@ -132,17 +176,17 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: postgres  # pragma: allowlist secret
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
-        options: >-
+        options: >
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db  # pragma: allowlist secret
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -162,7 +206,7 @@ jobs:
       - name: Upload backend coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }} # pragma: allowlist secret
           files: backend/coverage.xml
           flags: backend
           name: codecov-backend

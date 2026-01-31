@@ -1,0 +1,4 @@
+[flake8]
+exclude = .venv, __pycache__, migrations, alembic*, tests, dist, _archieve
+max-line-length = 100
+ignore = E203, W503

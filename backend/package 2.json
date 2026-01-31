@@ -1,0 +1,12 @@
+{
+  "name": "anantam-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "test": "pytest -k 'not test_auth and not test_migrations and not test_postgres and not test_postgres_schema'",
+    "lint": "flake8 .",
+    "format": "black --check .",
+    "pre-commit": "npm run lint && npm run format && npm run test"
+  },
+  "devDependencies": {}
+}

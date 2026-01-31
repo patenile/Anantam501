@@ -1,14 +1,16 @@
+import os
+import sys
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
-import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from database import Base  # noqa
 from models import *  # noqa
 from database import DATABASE_URL
+
+# Add parent directory to sys.path for imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
