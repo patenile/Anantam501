@@ -102,33 +102,34 @@ def main():
         os.path.join(os.path.dirname(__file__), "..", "backend")
     )
     venv_python = os.path.join(backend_dir, ".venv", "bin", "python")
+    # Map package names to their import names where they differ
     required_pkgs = [
-        "fastapi",
-        "uvicorn",
-        "psycopg2-binary",
-        "sqlalchemy",
-        "python-dotenv",
-        "passlib",
-        "python-jose",
-        "python-multipart",
-        "fastapi-pagination",
-        "aiofiles",
-        "aiosmtplib",
-        "alembic",
-        "loguru",
+        ("fastapi", "fastapi"),
+        ("uvicorn", "uvicorn"),
+        ("psycopg2-binary", "psycopg2"),
+        ("sqlalchemy", "sqlalchemy"),
+        ("python-dotenv", "dotenv"),
+        ("passlib", "passlib"),
+        ("python-jose", "jose"),
+        ("python-multipart", "multipart"),
+        ("fastapi-pagination", "fastapi_pagination"),
+        ("aiofiles", "aiofiles"),
+        ("aiosmtplib", "aiosmtplib"),
+        ("alembic", "alembic"),
+        ("loguru", "loguru"),
     ]
     missing_pkgs = []
-    for pkg in required_pkgs:
+    for pkg_name, import_name in required_pkgs:
         result = subprocess.run(
             [
                 venv_python,
                 "-c",
-                f'import {pkg.replace("-", "_")}',
+                f'import {import_name}',
             ],
             capture_output=True,
         )
         if result.returncode != 0:
-            missing_pkgs.append(pkg)
+            missing_pkgs.append(pkg_name)
     if not missing_pkgs:
         print("[OK] All required Python packages are installed in backend/.venv.")
     else:

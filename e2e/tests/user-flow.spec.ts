@@ -18,7 +18,7 @@ test.describe("User Registration and Login Flow", () => {
       timeout: 10000,
     });
     await expect(page.getByTestId("registration-message")).toHaveText(
-      "Registration successful",
+      "Registration successful"
     );
 
     // Go to login page
@@ -43,7 +43,7 @@ test.describe("User Registration and Login Flow", () => {
       timeout: 10000,
     });
     await expect(page.getByTestId("registration-message")).toHaveText(
-      "Invalid email",
+      "Invalid email"
     );
   });
 
@@ -60,7 +60,7 @@ test.describe("User Registration and Login Flow", () => {
       timeout: 10000,
     });
     await expect(page.getByTestId("login-message")).toHaveText(
-      "Invalid credentials",
+      "Invalid credentials"
     );
   });
 });
