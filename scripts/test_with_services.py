@@ -79,20 +79,15 @@ def wait_for_db():
         except NameError:
             print("[WARN] load_env_vars() not implemented; skipping.")
 
-        print("[INFO] Running backend tests...")
+        print("[INFO] Running backend tests inside backend container...")
         reports_dir = Path("reports")
         reports_dir.mkdir(exist_ok=True)
         junit_path = reports_dir / "backend-junit.xml"
-        backend_code = subprocess.call(
-            [
-                "./backend/.venv/bin/python",
-                "-m",
-                "pytest",
-                "backend/tests",
-                f"--junitxml={junit_path}",
-            ]
-            + pytest_args
-        )
+        backend_test_cmd = [
+            "docker", "compose", "-f", COMPOSE_FILE, "exec", "-T", "backend",
+            "pytest", "tests", f"--junitxml={junit_path}"
+        ] + pytest_args
+        backend_code = subprocess.call(backend_test_cmd)
 
         frontend_code = 0
         if not args.no_frontend:
@@ -138,6 +133,76 @@ def teardown_services():
 
 
 def main():
+    # --- Ensure Docker Compose services are up before any DB operations ---
+    print("[INFO] Starting Docker Compose services...")
+    up_cmd = ["docker", "compose", "-f", COMPOSE_FILE, "up", "-d"]
+    result = subprocess.run(up_cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("[ERROR] Could not start Docker Compose services:")
+        print(result.stdout)
+        print(result.stderr)
+        sys.exit(result.returncode)
+
+    # --- Wait for test database to be ready after starting services ---
+    import time
+    print("[INFO] Waiting for test database to be ready after starting services...")
+    max_attempts = 10
+    for attempt in range(max_attempts):
+        check_cmd = [
+            "docker", "compose", "-f", COMPOSE_FILE, "exec", "-T", "db",
+            "pg_isready", "-U", "anantam", "-d", "postgres"
+        ]
+        result = subprocess.run(check_cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            print("[INFO] Postgres service is ready.")
+            break
+        else:
+            print(f"[INFO] Waiting for Postgres service... (attempt {attempt+1}/{max_attempts})")
+            time.sleep(2)
+    else:
+        print("[ERROR] Postgres service did not become ready in time.")
+        sys.exit(1)
+
+    # --- Drop and recreate test database for a clean slate ---
+    print("[INFO] Dropping and recreating test database before migrations...")
+    # Force disconnect all users from the test database
+    terminate_cmd = [
+        "docker", "compose", "-f", COMPOSE_FILE, "exec", "-T", "db",
+        "psql", "-U", "anantam", "-d", "postgres", "-c",
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'anantam_test' AND pid <> pg_backend_pid();"
+    ]
+    result = subprocess.run(terminate_cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("[ERROR] Could not terminate connections to test database:")
+        print(result.stdout)
+        print(result.stderr)
+        sys.exit(result.returncode)
+    # Drop the test database
+    drop_cmd = [
+        "docker", "compose", "-f", COMPOSE_FILE, "exec", "-T", "db",
+        "psql", "-U", "anantam", "-d", "postgres", "-c",
+        "DROP DATABASE IF EXISTS anantam_test;"
+    ]
+    result = subprocess.run(drop_cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("[ERROR] Could not drop test database:")
+        print(result.stdout)
+        print(result.stderr)
+        sys.exit(result.returncode)
+    # Create the test database
+    create_cmd = [
+        "docker", "compose", "-f", COMPOSE_FILE, "exec", "-T", "db",
+        "psql", "-U", "anantam", "-d", "postgres", "-c",
+        "CREATE DATABASE anantam_test;"
+    ]
+    result = subprocess.run(create_cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print("[ERROR] Could not create test database:")
+        print(result.stdout)
+        print(result.stderr)
+        sys.exit(result.returncode)
+    else:
+        print("[INFO] Test database reset successful.")
     pre_test_checks()
     clean_old_reports()
     import argparse
@@ -189,10 +254,14 @@ def main():
     except NameError:
         print("[WARN] load_env_vars() not implemented; skipping.")
 
+
     # --- DB Migration Step ---
-    print("[INFO] Running Alembic migrations before backend tests...")
-    alembic_ini = os.path.join("backend", "alembic.ini")
-    alembic_cmd = ["./backend/.venv/bin/alembic", "-c", alembic_ini, "upgrade", "head"]
+    print("[INFO] Running Alembic migrations inside backend container before backend tests...")
+    alembic_cmd = [
+        "docker", "compose", "-f", COMPOSE_FILE, "exec", "-T", "backend",
+        "env", "PYTHONPATH=/app",
+        "alembic", "-c", "alembic.ini", "upgrade", "head"
+    ]
     result = subprocess.run(alembic_cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print("[ERROR] Alembic migration failed:")
@@ -204,7 +273,10 @@ def main():
 
         # --- Test Data Seeding Step ---
         print("[INFO] Seeding test data for integration/E2E tests...")
-        seed_cmd = ["./backend/.venv/bin/python", "backend/test_seed.py"]
+        seed_cmd = [
+            "docker", "compose", "-f", COMPOSE_FILE, "exec", "-T", "backend",
+            "python", "test_seed.py"
+        ]
         result = subprocess.run(seed_cmd, capture_output=True, text=True)
         if result.returncode != 0:
             print("[ERROR] Test data seeding failed:")
@@ -244,11 +316,11 @@ def main():
     e2e_code = 0
     if not args.no_e2e and not args.backend_only and not args.frontend_only:
         print("[INFO] Running E2E tests...")
+        reports_dir = Path("reports")
+        reports_dir.mkdir(exist_ok=True)
         e2e_cmd = ["npx", "playwright", "test"]
         if args.e2e_pattern:
             e2e_cmd += [args.e2e_pattern]
-        reports_dir = Path("reports")
-        reports_dir.mkdir(exist_ok=True)
         junit_path = reports_dir / "e2e-junit.xml"
         e2e_cmd += [f"--reporter=junit,{junit_path}"]
         e2e_code = subprocess.call(e2e_cmd, cwd="e2e")

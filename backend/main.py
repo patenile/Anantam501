@@ -8,7 +8,6 @@ import database
 from sqlalchemy.exc import IntegrityError
 
 app = FastAPI()
-models.Base.metadata.create_all(bind=database.engine)
 session_local = database.SessionLocal
 engine = database.engine
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
