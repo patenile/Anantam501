@@ -63,7 +63,7 @@ jobs:
                 ./backend/.venv/bin/python scripts/test_with_services.py --ci
                 fi
             - name: Upload all test reports
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v6
               with:
                 name: all-test-reports
                 path: reports/
@@ -211,7 +211,7 @@ jobs:
           flags: backend
           name: codecov-backend
       - name: Upload backend coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: backend-coverage-report
           path: backend/htmlcov
@@ -247,7 +247,7 @@ jobs:
           flags: frontend
           name: codecov-frontend
       - name: Upload frontend coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: frontend-coverage-report
           path: frontend/coverage
@@ -334,19 +334,19 @@ jobs:
     needs: [test-backend, test-frontend, test-e2e]
     steps:
       - name: Upload backend test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: backend-test-results
           path: backend/.pytest_cache
           if-no-files-found: ignore
       - name: Upload frontend test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: frontend-test-results
           path: frontend/test-results
           if-no-files-found: ignore
       - name: Upload e2e test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-test-results
           path: e2e/test-results
