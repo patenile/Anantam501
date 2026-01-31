@@ -26,6 +26,7 @@ Keep .env.test for test-only secrets and .env for your main app/dev environment.
 The project uses two separate Docker Compose files to keep development and test environments isolated:
 
 - **docker-compose.yml** (in infra/):
+
   - Use this for normal development, design, and running the main application stack.
   - Reads environment variables from your .env file (not committed to version control).
   - Safe for local development and design work.
@@ -153,21 +154,40 @@ npm run pre-commit
 
 See todo.md for a checklist of what is currently disabled and how to re-enable.
 
-Your setup is now robust and follows best practices for environment isolation, automation, and CI/CD integration. Here are a few optional but valuable adjustments you could consider for even greater reliability and developer experience:
+## 9. Running All Backend, Frontend, and E2E Tests Together
 
-Good to Have:
+To run all backend, frontend, and end-to-end (E2E) tests in a single command, use the following Python script:
 
-Add a README section or quickstart in USER_GUIDE.md explaining the difference between docker-compose.yml and docker-compose.test.yml, and how/when to use each.
-Add a pre-test check in test_with_services.py to ensure Docker is running and the compose file exists.
-Automatically clean up old test artifacts and reports to save disk space.
-Add a test summary output at the end of test_with_services.py for local runs (not just CI).
-Use .env.test for all test-specific secrets and variables, and document this in your guides.
-Add a GitHub Actions status badge to your README for instant CI visibility.
-Periodically review and prune unused Docker volumes/networks with a maintenance script.
-Missing (if not already present):
+```sh
+python scripts/test_with_services.py
+```
 
-Database migration step before running backend tests (e.g., alembic upgrade head).
-Test data seeding for integration/E2E tests.
-More granular test selection (by tag, file, or changed code).
-Notification for test flakiness or repeated failures.
-Let me know if you want to implement any of these now, or if you’re ready to focus on validating your new workflow!
+### What this command does:
+- Spins up all required services (database, backend, frontend, etc.) using Docker Compose.
+- Runs all backend tests (pytest), all frontend tests (npm/vitest), and all E2E tests (Playwright) in sequence.
+- Cleans up and tears down all services after tests complete.
+- Prints a summary of test results for each layer (backend, frontend, e2e).
+
+#### Optional flags:
+- `--no-frontend` — Skip frontend tests.
+- `--no-e2e` — Skip E2E tests.
+- `--no-teardown` — Keep services running after tests (for debugging).
+- `--ci` — Print CI-friendly output.
+
+### When to use this script:
+- For full-stack validation before a release or major merge.
+- In CI/CD pipelines to ensure all layers pass together.
+- When you want to test the integration of backend, frontend, and E2E flows in one go.
+
+### When to use `npm run pre-commit` instead:
+- For fast local checks of code style, linting, and frontend unit tests before committing code.
+- When backend or database services are not available or you want to skip integration tests.
+
+**Best Practice:**
+- Use `python scripts/test_with_services.py` for full-stack or CI validation.
+- Use `npm run pre-commit` for quick local checks and code quality enforcement.
+
+See the script's help for more options:
+```sh
+python scripts/test_with_services.py --help
+```
